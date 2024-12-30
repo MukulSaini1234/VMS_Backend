@@ -1,4 +1,4 @@
-package com.transline.vms.repository;
+package com.translineindia.vms.repository;
 
 
 import java.util.List;
@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.transline.vms.entity.Visitor;
+import com.translineindia.vms.entity.Visitor;
 
 @Repository
 public interface VisitorRepository extends JpaRepository<Visitor,Long>{

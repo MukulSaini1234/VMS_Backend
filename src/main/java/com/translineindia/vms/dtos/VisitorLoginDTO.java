@@ -1,4 +1,4 @@
-package com.transline.vms.dtos;
+package com.translineindia.vms.dtos;
 
 
 

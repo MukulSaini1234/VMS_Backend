@@ -1,4 +1,4 @@
-package com.transline.vms.controller;
+package com.translineindia.vms.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.transline.vms.dtos.VisitorLoginDTO;
-import com.transline.vms.service.VisitorService;
+import com.translineindia.vms.dtos.VisitorLoginDTO;
+import com.translineindia.vms.service.VisitorService;
 
 import jakarta.validation.Valid;
 

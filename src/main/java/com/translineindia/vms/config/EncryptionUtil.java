@@ -1,4 +1,4 @@
-package com.transline.vms.config;
+package com.translineindia.vms.config;
 
 
 import javax.crypto.Cipher;

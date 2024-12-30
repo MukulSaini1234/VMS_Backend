@@ -1,12 +1,12 @@
-package com.transline.vms.service;
+package com.translineindia.vms.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.transline.vms.dtos.VisitorLoginDTO;
-import com.transline.vms.entity.Visitor;
-import com.transline.vms.repository.VisitorRepository;
+import com.translineindia.vms.dtos.VisitorLoginDTO;
+import com.translineindia.vms.entity.Visitor;
+import com.translineindia.vms.repository.VisitorRepository;
 
 
 

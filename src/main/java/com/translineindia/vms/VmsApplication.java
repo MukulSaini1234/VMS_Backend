@@ -1,4 +1,4 @@
-package com.transline.vms;
+package com.translineindia.vms;
 
 
 import org.springframework.boot.SpringApplication;
