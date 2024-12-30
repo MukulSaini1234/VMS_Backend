@@ -1,4 +1,5 @@
-package com.transline.VMS.DTO;
+package com.transline.vms.dtos;
+
 
 
 import jakarta.validation.constraints.Email;

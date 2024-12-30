@@ -1,11 +1,12 @@
-package com.transline.VMS.services;
+package com.transline.vms.service;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.transline.VMS.DTO.VisitorLoginDTO;
-import com.transline.VMS.entities.Visitor;
-import com.transline.VMS.repositories.VisitorRepository;
+import com.transline.vms.dtos.VisitorLoginDTO;
+import com.transline.vms.entity.Visitor;
+import com.transline.vms.repository.VisitorRepository;
 
 
 
@@ -20,6 +21,9 @@ public class VisitorService {
 		visitor.setName(newVisitorDTO.getName());
 		visitor.setPassword(newVisitorDTO.getPassword());
 		visitor.setUsername(generateUsername());
+		visitor.setCmpCd(newVisitorDTO.getCmpCd());
+		visitor.setOffCd(newVisitorDTO.getOffCd());
+//		visitor.setPhoneNo(Long.parseLong(newVisitorDTO.getPhoneNo();
 		Visitor savedVisitor=visitorRepo.save(visitor);
 //		VisitorLoginDTO userDTO=new VisitorLoginDTO();
 //		userDTO.setId(savedUser.getId());

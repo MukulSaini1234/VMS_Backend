@@ -1,4 +1,5 @@
-package com.transline.VMS.config;
+package com.transline.vms.config;
+
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;

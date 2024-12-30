@@ -1,6 +1,7 @@
-package com.transline.VMS.entities;
+package com.transline.vms.entity;
 
-import com.transline.VMS.config.EncryptionUtil;
+
+import com.transline.vms.config.EncryptionUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
