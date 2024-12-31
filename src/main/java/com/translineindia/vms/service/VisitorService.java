@@ -1,7 +1,10 @@
 package com.translineindia.vms.service;
 
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 //import com.example.demo.excep.ResourceNotFoundException;
@@ -16,26 +19,51 @@ public class VisitorService {
 	@Autowired
 	private VisitorRepository visitorRepo;
 	
-	public VisitorLoginDTO createUser(VisitorLoginDTO newVisitorDTO) {
-		Visitor visitor=new Visitor();
-		visitor.setEmail(newVisitorDTO.getEmail());
-		visitor.setName(newVisitorDTO.getName());
-		visitor.setPassword(newVisitorDTO.getPassword());
-		visitor.setUsername(generateUsername());
-		visitor.setCmpCd(newVisitorDTO.getCmpCd());
-		visitor.setOffCd(newVisitorDTO.getOffCd());
-		VisitorLoginDTO visitorDTO=new VisitorLoginDTO();
-		if(visitorRepo.findByEmail(visitor.getEmail())==null) {
-		Visitor savedVisitor=visitorRepo.save(visitor);
-		visitorDTO.setId(savedVisitor.getId());
-		visitorDTO.setName(savedVisitor.getName());
-		visitorDTO.setEmail(savedVisitor.getEmail());
-		return visitorDTO;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	public String getNextVisitorId(String cmpCd) {		
+		String prevId="";
+		String prefix="VS";
+		Optional<String> data=visitorRepo.getMaxVisitorId(cmpCd);
+		if(data.isPresent()) {
+			prevId=data.get();
 		}else {
-			throw new AlreadyExistsException(newVisitorDTO.getName());
+			prevId=String.format("%s%08d", 1);
 		}
+		int prevSeq=Integer.parseInt(prevId.substring(prefix.length()))+1;
+		String nextId=String.format("%s%08d", prevSeq+1);
+		return nextId;
+	}
+	
+	public VisitorLoginDTO createUser(VisitorLoginDTO newVisitorDTO) {
 		
+		//cmpCd exist or not
 		
+		//email already exist in this cmpCd
+		visitorRepo.findByCmpCdAndEmail(newVisitorDTO.getCmpCd(),newVisitorDTO.getEmail())
+		.orElseThrow(()->new AlreadyExistsException("Email Already Registered"));
+		 		
+		Visitor visitor=new Visitor();
+		visitor.setFirstName(newVisitorDTO.getFirstName());
+		visitor.setLastName(newVisitorDTO.getLastName());
+		visitor.setEmail(newVisitorDTO.getEmail());				
+		visitor.setPassword(passwordEncoder.encode(newVisitorDTO.getPassword()));
+		visitor.setVisitorId(getNextVisitorId(newVisitorDTO.getCmpCd()));
+		visitor.setCmpCd(newVisitorDTO.getCmpCd());		
+		visitor.setVisitorCmpName(newVisitorDTO.getVisCmpName());
+		visitor.setAddress(newVisitorDTO.getAddress());
+						
+//		if(visitorRepo.findByEmail(visitor.getEmail())==null) {		
+		Visitor savedVisitor=visitorRepo.save(visitor);
+		
+		VisitorLoginDTO visitorDTO=new VisitorLoginDTO();
+		visitorDTO.setVisitorId(savedVisitor.getVisitorId());
+		visitorDTO.setFirstName(savedVisitor.getFirstName());
+		visitorDTO.setLastName(savedVisitor.getLastName());
+		visitorDTO.setEmail(savedVisitor.getEmail());
+		visitorDTO.setAddress(savedVisitor.getAddress());
+		return visitorDTO;		
 	}
 	
 	
