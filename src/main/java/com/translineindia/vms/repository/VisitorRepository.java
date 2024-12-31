@@ -14,13 +14,15 @@ import com.translineindia.vms.entity.Visitor;
 public interface VisitorRepository extends JpaRepository<Visitor,Long>{
 	
 	public List<Visitor> findByName(String name);
+	public List<Visitor> findByEmail(String email);
+
 	
 	public List<Visitor> findByNameContains(String name); 
 	
 	@Query("SELECT MAX(SUBSTRING(u.username, 3)) FROM Visitor u WHERE u.username LIKE 'VS%'")
     String findMaxSerialNumber();
 	
-	@Query(name="SELECT * FROM GetOfficesList(:cmpCd, :offCd)",nativeQuery = true)
+	@Query(value="SELECT * FROM GetOfficesList(:cmpCd, :offCd)",nativeQuery = true)
     List<Object[]> getOfficesList(@Param("cmpCd") String  cmpCd,@Param("offCd") String offCd);
 	
 	//@Query(name="SELECT * FROM GetOfficesList(?1, ?2)",nativeQuery = true)

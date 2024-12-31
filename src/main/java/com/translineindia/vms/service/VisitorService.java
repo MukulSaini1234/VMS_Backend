@@ -4,11 +4,12 @@ package com.translineindia.vms.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+//import com.example.demo.excep.ResourceNotFoundException;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.entity.Visitor;
 import com.translineindia.vms.repository.VisitorRepository;
 
-
+import com.translineindia.vms.exception.*;
 
 @Service
 public class VisitorService {
@@ -23,14 +24,18 @@ public class VisitorService {
 		visitor.setUsername(generateUsername());
 		visitor.setCmpCd(newVisitorDTO.getCmpCd());
 		visitor.setOffCd(newVisitorDTO.getOffCd());
-//		visitor.setPhoneNo(Long.parseLong(newVisitorDTO.getPhoneNo();
+		VisitorLoginDTO visitorDTO=new VisitorLoginDTO();
+		if(visitorRepo.findByEmail(visitor.getEmail())==null) {
 		Visitor savedVisitor=visitorRepo.save(visitor);
-//		VisitorLoginDTO userDTO=new VisitorLoginDTO();
-//		userDTO.setId(savedUser.getId());
-//		userDTO.setName(savedUser.getName());
-//		userDTO.setEmail(savedUser.getEmail());
-//		return userDTO;
-		return newVisitorDTO;
+		visitorDTO.setId(savedVisitor.getId());
+		visitorDTO.setName(savedVisitor.getName());
+		visitorDTO.setEmail(savedVisitor.getEmail());
+		return visitorDTO;
+		}else {
+			throw new AlreadyExistsException(newVisitorDTO.getName());
+		}
+		
+		
 	}
 	
 	

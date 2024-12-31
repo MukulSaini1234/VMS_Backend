@@ -24,10 +24,10 @@ import lombok.Data;
 @Data
 public class Visitor {
 
-	@Column
+	@Column(name = "cmp_cd")
 	private String cmpCd;
 	
-	@Column
+	@Column(name = "off_cd")
 	private String offCd;
 	
 	@Id
@@ -43,7 +43,7 @@ public class Visitor {
 	@Column(length = 50,nullable = false)
 	private String name;
 	
-	@Column(length = 50,nullable = false)//unique=true
+	@Column(length = 50,nullable = false, unique = true)//unique=true
 	private String email;
 	
 	@Column(length = 100,name = "password")
