@@ -22,7 +22,7 @@ public class VisitorController {
 	private VisitorService VisitorService;
 	
 
-	@PostMapping
+	@PostMapping()
 	public ResponseEntity<VisitorLoginDTO> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){		
 		return ResponseEntity.status(HttpStatus.CREATED).body(VisitorService.createUser(newVisitorDTO));
 	}
