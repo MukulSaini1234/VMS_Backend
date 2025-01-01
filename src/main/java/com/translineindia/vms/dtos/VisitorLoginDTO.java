@@ -27,5 +27,7 @@ public class VisitorLoginDTO {
 	@NotEmpty
 	@Email
 	private String email;
+	
+	private String username;
 
 }

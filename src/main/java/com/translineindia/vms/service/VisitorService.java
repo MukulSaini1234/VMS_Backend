@@ -25,7 +25,9 @@ public class VisitorService {
 		visitor.setCmpCd(newVisitorDTO.getCmpCd());
 		visitor.setOffCd(newVisitorDTO.getOffCd());
 		VisitorLoginDTO visitorDTO=new VisitorLoginDTO();
-		if(visitorRepo.findByEmail(visitor.getEmail())==null) {
+//		if(visitorRepo.findByEmail(visitor.getEmail())==null)
+		if (visitorRepo.findByEmail(visitor.getEmail()).isEmpty())
+		{
 		Visitor savedVisitor=visitorRepo.save(visitor);
 		visitorDTO.setId(savedVisitor.getId());
 		visitorDTO.setName(savedVisitor.getName());

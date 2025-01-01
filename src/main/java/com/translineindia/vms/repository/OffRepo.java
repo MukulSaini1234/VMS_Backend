@@ -6,4 +6,6 @@ import com.translineindia.vms.entity.OffMst;
 
 public interface OffRepo extends JpaRepository<OffMst, String> {
 
+	
+	
 }

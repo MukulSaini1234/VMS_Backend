@@ -13,10 +13,11 @@ import lombok.Data;
 @IdClass(OfficeId.class)
 public class OffMst {
 
-	
+	@Id
 	@Column(name = "CMP_Cd", length=10)
 	private String cmpCd;
 	
+	@Id
 	@Column(name = "OFF_CD", length = 10)
 	private String offCd;
 	

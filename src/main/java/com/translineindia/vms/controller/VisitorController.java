@@ -1,8 +1,12 @@
 package com.translineindia.vms.controller;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +27,14 @@ public class VisitorController {
 	
 
 	@PostMapping()
-	public ResponseEntity<VisitorLoginDTO> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){		
-		return ResponseEntity.status(HttpStatus.CREATED).body(VisitorService.createUser(newVisitorDTO));
+	public ResponseEntity<Map<String, Object>> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){	
+		Map<String, Object> response = new HashMap<>();
+		VisitorLoginDTO visitorDTO = VisitorService.createUser(newVisitorDTO);
+		response.put("username",newVisitorDTO.getUsername());
+		response.put("email",newVisitorDTO.getEmail());
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
+	
 		
 }
