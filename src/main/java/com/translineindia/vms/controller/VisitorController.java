@@ -26,15 +26,19 @@ public class VisitorController {
 	private VisitorService VisitorService;
 	
 
-	@PostMapping()
-	public ResponseEntity<Map<String, Object>> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){	
-		Map<String, Object> response = new HashMap<>();
-		VisitorLoginDTO visitorDTO = VisitorService.createUser(newVisitorDTO);
-		response.put("username",newVisitorDTO.getUsername());
-		response.put("email",newVisitorDTO.getEmail());
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
-	}
+//	@PostMapping()
+//	public ResponseEntity<VisitorLoginDTO> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){		
+//		return ResponseEntity.status(HttpStatus.CREATED).body(VisitorService.createUser(newVisitorDTO));
+//	}
 	
+	@PostMapping()
+	 public ResponseEntity<Map<String,Object>> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){ 
+	 Map<String, Object> response = new HashMap<>();
+	 VisitorLoginDTO visitorDTO = VisitorService.createUser(newVisitorDTO);
+	 response.put("username",visitorDTO.getUsername());
+	 response.put("email",visitorDTO.getEmail());
+	 
+	 return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	 }
 		
 }

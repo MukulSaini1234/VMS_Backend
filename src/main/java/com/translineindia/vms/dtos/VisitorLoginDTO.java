@@ -1,33 +1,39 @@
 package com.translineindia.vms.dtos;
 
 
-
-import org.hibernate.validator.constraints.UniqueElements;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class VisitorLoginDTO {
-	
-	private Long id;
-	
+public class VisitorLoginDTO {	
 	@NotEmpty
 	private String cmpCd;
+		
+	private String visitorId;
+		
 	@NotEmpty
-	private String offCd;
+	private String firstName;
+	
 	@NotEmpty
-	private String name;
+	private String lastName;
+	
 	@NotEmpty
 	private String password;
+	
 	@NotEmpty
 	private String phoneNo;
-	
+	 
 	@NotEmpty
 	@Email
 	private String email;
+			
+	@NotEmpty
+	private String VisCmpName;
+	
+	@Size(max = 200)
+	private String address;
 	
 	private String username;
-
 }
