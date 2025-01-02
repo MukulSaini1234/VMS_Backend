@@ -6,7 +6,5 @@ import com.translineindia.vms.dtos.OfficeDTO;
 
 @RequestMapping("/api/getOffices")
 public class OfficeMstController {
-	public OfficeDTO getOffice() {
-		OfficeDTO office = new OfficeDTO()
-	}
+	
 }
