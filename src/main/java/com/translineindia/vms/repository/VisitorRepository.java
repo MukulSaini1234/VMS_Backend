@@ -24,6 +24,7 @@ public interface VisitorRepository extends JpaRepository<Visitor,VisitorId>{
 	@Query("SELECT MAX(SUBSTRING(u.visitorId, 3)) FROM Visitor u WHERE u.visitorId LIKE 'VS%'")
     String findMaxSerialNumber();
 	
+
 	@Query(value="SELECT * FROM GetOfficesList(:cmpCd, :offCd)",nativeQuery = true)
     List<Object[]> getOfficesList(@Param("cmpCd") String  cmpCd,@Param("offCd") String offCd);
 	
