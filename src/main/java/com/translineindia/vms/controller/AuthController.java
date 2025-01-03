@@ -15,8 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +33,10 @@ import com.translineindia.vms.security.VisitorLogin;
 import com.translineindia.vms.service.CustomUserDetailsService;
 import com.translineindia.vms.service.VisitorService;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.validation.Valid;
 
 import com.translineindia.vms.security.*;
@@ -40,6 +47,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins =  "*" , allowedHeaders = "*", allowCredentials = "false")
 public class AuthController {
 	
 	@Autowired
@@ -57,7 +65,7 @@ public class AuthController {
 		Visitor visitor = visitorService.getVisitorByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 if(visitor!=null && passwordEncoder.matches(jwtRequest.getUserPw(), visitor.getPassword())) {
-			 	String userNameToken = "VS$" + jwtRequest.getCmpCd()+ "$" +jwtRequest.getUserId();
+			 	String userNameToken = "VS::" + jwtRequest.getCmpCd()+ "::" +jwtRequest.getUserId();
 			    String token = this.jwtHelper.generateToken(userNameToken);
 				long expirationTime = System.currentTimeMillis() + this.jwtHelper.getTokenValidity() * 1000;
 				
@@ -88,4 +96,8 @@ public class AuthController {
 		VisitorLoginDTO visitorDTO = visitorService.createUser(newVisitorDTO);	 
 		return ResponseEntity.status(HttpStatus.CREATED).body(visitorDTO);
 	 }
+	
+  
+	
+	
 }

@@ -38,18 +38,17 @@ public class SecurityConfig {
 	
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf().disable() // Disable CSRF for stateless APIs
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions
+    	return http
+            .csrf().disable() // Disable CSRF for stateless APIs            
             .authorizeHttpRequests(auth -> auth        		
-                .requestMatchers("/auth/**").permitAll() // Allow public access to authentication endpoints
+                .requestMatchers("/auth/**","/public/**").permitAll() // Allow public access to authentication endpoints
                 .anyRequest().authenticated() // Secure all other endpoints
                 
-            )
+            )  
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
             .exceptionHandling(e->e.authenticationEntryPoint(jwtAuthenticationEntyPoint))
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
-        
-        return http.build();
+            .build();        
     }
 	
 	
@@ -58,10 +57,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+//        return configuration.getAuthenticationManager();
+//    }
 
 //    @Bean
 //    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
@@ -82,10 +81,5 @@ public class SecurityConfig {
 	@Bean
 	public JwtHelper jwtHelper() {
 		return new JwtHelper();
-	}
-	
-	@Bean	
-	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web)->web.ignoring().requestMatchers("/auth/**");		
-	}
+	}	
 }

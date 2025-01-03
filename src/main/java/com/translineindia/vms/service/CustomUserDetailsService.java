@@ -30,14 +30,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 	
 	   @Override
 	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		   //username= VS$cmpCd$visitorId   || VS$cmpCd$emailId
-		   if(username.startsWith("VS$")) {
-			   username=username.substring(3);
+		   //username= VS$cmpCd$visitorId   || VS$cmpCd$emailId		  
+		   System.out.println(username);
+		   if(username.startsWith("VS::")) {
+			   username=username.substring(4);
 			   String cmpCd="";
-			   String idOrEmail="";
-			   if(username.contains("$")) {
-				   cmpCd=username.split("$")[0];
-				   idOrEmail=username.split("$")[1];
+			   String idOrEmail="";			   
+			   if(username.contains("::")) {
+				   cmpCd=username.split("::")[0];
+				   idOrEmail=username.split("::")[1];
 			   }
 			   Visitor visitor=visitorService.getVisitorByIdOrEmail(cmpCd, idOrEmail);
 			   if(visitor!=null) {
