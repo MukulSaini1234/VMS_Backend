@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.translineindia.vms.dtos.companyDTO;
 import com.translineindia.vms.entity.CmpMst;
 
-public interface companyRepository extends JpaRepository<CmpMst,String>{
+public interface CompanyRepository extends JpaRepository<CmpMst,String>{
     
 	
 	@Query(value = "SELECT c.cmp_name, c.cmp_cd " +

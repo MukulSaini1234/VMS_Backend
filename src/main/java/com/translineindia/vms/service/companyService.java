@@ -12,13 +12,13 @@ import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.dtos.companyDTO;
 import com.translineindia.vms.entity.Visitor;
 import com.translineindia.vms.repository.VisitorRepository;
-import com.translineindia.vms.repository.companyRepository;
+import com.translineindia.vms.repository.CompanyRepository;
 
 @Service
-public class companyService {
+public class CompanyService {
 
 	@Autowired
-	private companyRepository companyRepo;
+	private CompanyRepository companyRepo;
 	
 //	public String  getCmpName(String cmpCd) {
 //		
