@@ -4,8 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.translineindia.vms.entity.OffMst;
 
-public interface OffRepo extends JpaRepository<OffMst, String> {
-
-	
+public interface OffRepo {
 	
 }
