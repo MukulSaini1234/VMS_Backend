@@ -53,4 +53,15 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(msg);
 	}
 	
+	@ExceptionHandler(BadCredentialsException.class)
+	public ResponseEntity BadCredentialException(BadCredentialsException ex) {
+		return ResponseEntity.badRequest().body(null);
+		
+	}
+	
+	@ExceptionHandler(ConflictException.class)
+	public ResponseEntity handle(ConflictException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());		
+	}
+	
 }

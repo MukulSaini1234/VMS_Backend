@@ -22,14 +22,14 @@ public class VisitorLoginDTO {
 	@NotEmpty
 	private String password;
 	
-	@NotEmpty
+	
 	private String phoneNo;
 	 
 	@NotEmpty
 	@Email
 	private String email;
 			
-	@NotEmpty
+	
 	private String VisCmpName;
 	
 	@Size(max = 200)

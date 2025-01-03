@@ -1,6 +1,5 @@
 package com.translineindia.vms.repository;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -33,5 +32,16 @@ public interface VisitorRepository extends JpaRepository<Visitor,VisitorId>{
     
     @Query("SELECT MAX(v.visitorId) FROM Visitor v WHERE v.cmpCd=:cmpCd")
     Optional<String> getMaxVisitorId(String cmpCd);
+    
+    public Visitor findByCmpCdAndFirstName(String cmpCd,String name);
+    
+    @Query("SELECT v FROM Visitor v WHERE v.cmpCd=:cmpCd AND (v.email=:visitorId OR v.visitorId=:visitorId)")
+    public Optional<Visitor> getVisitor(@Param("cmpCd") String cmpCd, @Param("visitorId") String visitorIdOrEmail);
+        /*
+         * findBy=queryBy=readBy
+         * existsBy 
+         * countBy
+         * deleteBy
+         * 
+         * */   
 }
-//

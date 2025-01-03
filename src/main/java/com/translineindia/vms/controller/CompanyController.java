@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 public class CompanyController {
 
 	@Autowired
-	private companyService companyService;
+	private CompanyService companyService;
 	
 //	@GetMapping
 //	public ResponseEntity<String> checkCmpCd(@RequestBody companyDTO cmpDTO){		
