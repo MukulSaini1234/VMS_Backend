@@ -9,6 +9,4 @@ import com.translineindia.vms.entity.OfficeId;
 public interface OffRepo extends JpaRepository<OffMst, OfficeId> {
 
 	
->>>>>>> 271d1fe37b2d731fedba4a4ee815fe5ba5ce8e91
-	
 }

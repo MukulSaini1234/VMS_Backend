@@ -43,6 +43,7 @@ import com.translineindia.vms.security.*;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
@@ -52,9 +53,8 @@ public class AuthController {
 	
 	@Autowired
 	private JwtHelper jwtHelper;
-	
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+		
+	private PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
 			
 	@Autowired
 	private VisitorService visitorService;

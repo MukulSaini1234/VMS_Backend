@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,18 +38,20 @@ public class SecurityConfig {
 	@Autowired
 	private JwtAuthenticationEntyPoint jwtAuthenticationEntyPoint;
 	
+	@Autowired
+	private UserDetailsService userDetailsService;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     	return http
-            .csrf().disable() // Disable CSRF for stateless APIs            
+            .csrf(csrf->csrf.disable()) // Disable CSRF for stateless APIs            
             .authorizeHttpRequests(auth -> auth        		
-                .requestMatchers("/auth/**","/public/**").permitAll() // Allow public access to authentication endpoints
-                .anyRequest().authenticated() // Secure all other endpoints
-                
+                .requestMatchers("/auth/**","/public/**").permitAll() // Allow public access to authentication endpoints                
+                .anyRequest().authenticated() // Secure all other endpoints                
             )  
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
-            .exceptionHandling(e->e.authenticationEntryPoint(jwtAuthenticationEntyPoint))
+//            .exceptionHandling(e->e.authenticationEntryPoint(jwtAuthenticationEntyPoint))
             .build();        
     }
 	
@@ -57,10 +61,20 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-//        return configuration.getAuthenticationManager();
-//    }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+    
+    @Bean
+    public AuthenticationProvider authenticationProvider()  {
+    	DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
+    	provider.setUserDetailsService(userDetailsService);
+    	provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+    
+    
 
 //    @Bean
 //    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
@@ -77,9 +91,4 @@ public class SecurityConfig {
 //        return new InMemoryUserDetailsManager(user, admin);
 //    }
    
-   
-	@Bean
-	public JwtHelper jwtHelper() {
-		return new JwtHelper();
-	}	
 }

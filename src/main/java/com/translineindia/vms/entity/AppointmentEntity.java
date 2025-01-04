@@ -1,5 +1,7 @@
 package com.translineindia.vms.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -28,7 +30,7 @@ public class AppointmentEntity {
 	private String forDays;
 	
 	@Column(name = "from_date")
-	private String fromDate;
+	private LocalDate fromDate;
 	
 	@Column(name = "visitor_add", length = 50)
 	private String visitorAdd;
@@ -36,14 +38,14 @@ public class AppointmentEntity {
 	@Column(name = "id_proof", length = 20)
 	private String idProof;
 	
-	@Column(name = "id_proof_file")
-	private byte[] fileData;
+//	@Column(name = "id_proof_file")
+//	private byte[] fileData;
 	
 	@Column(name = "vis_name", length = 30)
 	private String visName;
 	
 	@Column(name = "vis_DOB")
-	private String visDob;
+	private LocalDate visDob;
 	
 	@Column(name = "vis_num", length = 13)
 	private String visNum;
@@ -51,8 +53,8 @@ public class AppointmentEntity {
 	@Column(name = "vis_accessories", length = 30)
 	private String visAccessories;
 	
-	@Column(name = "vis_photo")
-	private byte[] visPhoto;
+//	@Column(name = "vis_photo")
+//	private byte[] visPhoto;
 	
 	@Column(name = "vis_vehicle")
 	private Boolean visVehicle;
@@ -70,6 +72,6 @@ public class AppointmentEntity {
 	private String visDriverDlNo;
 	
 	@Column(name = "vis_driverdlupto", length = 20)
-	private String visDriverDlUpto;
+	private LocalDate visDriverDlUpto;
 	
 }
