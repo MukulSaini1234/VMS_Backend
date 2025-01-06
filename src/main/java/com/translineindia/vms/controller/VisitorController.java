@@ -3,7 +3,9 @@ package com.translineindia.vms.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -40,6 +44,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/visitors")
+@CrossOrigin(origins = "*",allowedHeaders = "*", allowCredentials = "false")
 public class VisitorController {
 	
 	@Autowired
@@ -60,7 +65,7 @@ public class VisitorController {
 	}
    
 	@PostMapping(path="/appointment",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public ResponseEntity Appointment(@Valid AppointmentDTO dto) throws IOException{
+	public ResponseEntity Appointment(@Valid @ModelAttribute AppointmentDTO dto) throws IOException{
 		System.out.println(dto);
 //		System.out.println(params);
 		AppointmentDTO responseDto = appointmentService.RequestAppointment(dto);		
@@ -88,5 +93,16 @@ public class VisitorController {
     	String apiUrl = "http://localhost:8081/employee?empId="+empId+"&cmpCd="+cmpCd;
         return ResponseEntity.ok(restTemplate.getForObject(apiUrl, String.class)); //
     }
+    
+    @GetMapping("/test")
+    public String test() {    	    	
+        return "It Works";
+    }
 	
+    @GetMapping("getAppointmentRequests")
+    public ResponseEntity<Optional<List<AppointmentDTO>>> getVisitorRequests(@RequestParam String cmpCd, String visitorId) {
+    	Optional<List<AppointmentDTO>> req = Optional.ofNullable(appointmentService.getVisitRequests(cmpCd, visitorId));
+    	return ResponseEntity.status(HttpStatus.OK).body(req);
+    }
+    
 }

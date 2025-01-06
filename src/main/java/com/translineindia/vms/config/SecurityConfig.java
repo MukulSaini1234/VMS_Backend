@@ -1,8 +1,14 @@
 package com.translineindia.vms.config;
 
+import org.springframework.http.HttpHeaders;
+
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 import com.translineindia.vms.security.JwtAuthenticationEntyPoint;
 import com.translineindia.vms.security.JwtAuthenticationFilter;
@@ -39,20 +46,25 @@ public class SecurityConfig {
 	private JwtAuthenticationEntyPoint jwtAuthenticationEntyPoint;
 	
 	@Autowired
-	private UserDetailsService userDetailsService;
+	private ApplicationContext applicationContext;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    	return http
+    	SecurityFilterChain filterChain= http
             .csrf(csrf->csrf.disable()) // Disable CSRF for stateless APIs            
             .authorizeHttpRequests(auth -> auth        		
                 .requestMatchers("/auth/**","/public/**").permitAll() // Allow public access to authentication endpoints                
-                .anyRequest().authenticated() // Secure all other endpoints                
+                .anyRequest().authenticated() // Secure all other endpoints                                
             )  
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
 //            .exceptionHandling(e->e.authenticationEntryPoint(jwtAuthenticationEntyPoint))
-            .build();        
+            .cors(customizer->customizer.configurationSource(request->corsConfiguration()))
+            .build(); 
+    	
+    	filterChain.getFilters().forEach(item->System.out.println(item));
+    	
+    	return filterChain;
     }
 	
 	
@@ -66,13 +78,14 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
     
-    @Bean
-    public AuthenticationProvider authenticationProvider()  {
-    	DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
-    	provider.setUserDetailsService(userDetailsService);
-    	provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
+//    @Bean
+//    public AuthenticationProvider authenticationProvider()  {
+//    	DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
+//    	UserDetailsService userDetailsService=applicationContext.getBean(UserDetailsService.class);
+//    	provider.setUserDetailsService(userDetailsService);
+//    	provider.setPasswordEncoder(passwordEncoder());
+//        return provider;
+//    }
     
     
 
@@ -90,5 +103,34 @@ public class SecurityConfig {
 //
 //        return new InMemoryUserDetailsManager(user, admin);
 //    }
+    
+    
+    public CorsConfiguration corsConfiguration() {
+		String[] allowedMethods= {
+				HttpMethod.GET.name(),
+				HttpMethod.POST.name(),
+				HttpMethod.PUT.name(),
+				HttpMethod.DELETE.name(),
+				HttpMethod.OPTIONS.name(),
+				HttpMethod.PATCH.name()
+		};
+		
+		String[] allowedHeaders= {
+				HttpHeaders.AUTHORIZATION,
+				HttpHeaders.CONTENT_TYPE,
+				HttpHeaders.ACCEPT
+		};
+		String[] allowedOrigins= {"*"};
+		
+		CorsConfiguration cors=new CorsConfiguration();
+//		cors.setAllowedOrigins(Arrays.asList("*"));
+//		cors.setAllowedMethods(Arrays.asList("*"));
+//		cors.setAllowedHeaders(Arrays.asList("*"));
+		cors.setAllowedOrigins(Arrays.asList(allowedOrigins));
+		cors.setAllowedMethods(Arrays.asList(allowedMethods));					
+		cors.setAllowedHeaders(Arrays.asList(allowedHeaders));
+		return cors;
+	}
+    
    
 }

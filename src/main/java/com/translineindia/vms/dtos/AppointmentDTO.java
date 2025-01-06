@@ -13,9 +13,14 @@ import lombok.Data;
 @Data
 public class AppointmentDTO {
 
+	private Long reqId;
+	
     @NotBlank(message = "Employee ID cannot be blank")
     @Size(max = 10, message = "Employee ID must not exceed 10 characters")
     private String empId;
+    
+    @NotBlank(message = "Visitor Id cannot be blank")
+    private String visitorId;
 
     @NotBlank(message = "Employee Name cannot be blank")
     @Size(max = 30, message = "Employee Name must not exceed 30 characters")
@@ -72,6 +77,7 @@ public class AppointmentDTO {
 
     @NotNull(message = "Visitor Vehicle status cannot be null")
     private Boolean visVehicle;
-        
+       
+    
     private VehicleDetailsDTO vehicleDetails;
 }

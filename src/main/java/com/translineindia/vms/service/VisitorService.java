@@ -1,6 +1,7 @@
 package com.translineindia.vms.service;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -9,10 +10,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.translineindia.vms.dtos.AppointmentDTO;
 //import com.example.demo.excep.ResourceNotFoundException;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
+import com.translineindia.vms.entity.AppointmentEntity;
 import com.translineindia.vms.entity.Visitor;
 import com.translineindia.vms.entity.VisitorId;
+import com.translineindia.vms.repository.AppointmentRepo;
 import com.translineindia.vms.repository.VisitorRepository;
 
 import com.translineindia.vms.exception.*;
@@ -22,6 +26,9 @@ public class VisitorService {
 	
 	@Autowired
 	private VisitorRepository visitorRepo;
+	
+	@Autowired
+	private AppointmentRepo appointmentRepo;
 		
 	private PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
 
@@ -120,4 +127,5 @@ public class VisitorService {
 		return visitor.isPresent()?visitor.get():null;
 	}	
 	
+
 }

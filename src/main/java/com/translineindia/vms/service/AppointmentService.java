@@ -2,6 +2,7 @@ package com.translineindia.vms.service;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -25,7 +26,7 @@ public class AppointmentService {
 	
 	public AppointmentDTO RequestAppointment(AppointmentDTO newAppointmentDTO) throws IOException {
 		AppointmentEntity newRequest = new AppointmentEntity();
-		VehicleDetailsDTO vehicleDetails = new VehicleDetailsDTO();
+//		VehicleDetailsDTO vehicleDetails = new VehicleDetailsDTO();
 		newRequest.setEmpid(newAppointmentDTO.getEmpId());
 		newRequest.setEmpName(newAppointmentDTO.getEmpName());
 		newRequest.setEmpEmail(newAppointmentDTO.getEmpEmail());
@@ -34,12 +35,15 @@ public class AppointmentService {
 		newRequest.setFromDate(newAppointmentDTO.getFromDate());
 		newRequest.setVisitorAdd(newAppointmentDTO.getVisitorAdd());
 		newRequest.setIdProof(newAppointmentDTO.getIdProof());
-//		    newRequest.setFileData(newAppointmentDTO.getFileData().getBytes());
+		newRequest.setFileData(newAppointmentDTO.getFileData().getBytes());
+		newRequest.setVisPhoto(newAppointmentDTO.getFileData().getBytes());
 		newRequest.setVisName(newAppointmentDTO.getVisName());
 		newRequest.setVisDob(newAppointmentDTO.getVisDob());
 		newRequest.setVisNum(newAppointmentDTO.getVisNum());
 		newRequest.setVisAccessories(newAppointmentDTO.getVisAccessories());
+		newRequest.setVisitorId(newAppointmentDTO.getVisitorId());
 
+		System.out.println("newRequest :"+newRequest);
 		
 		newRequest.setVisDrivername(
 			    Optional.ofNullable(newAppointmentDTO)
@@ -47,36 +51,36 @@ public class AppointmentService {
 			            .map(VehicleDetailsDTO::getVisDrivername)
 			            .orElse(null) 
 			);
-
-			newRequest.setVisVehicleno(
-			    Optional.ofNullable(newAppointmentDTO)
-			            .map(AppointmentDTO::getVehicleDetails)
-			            .map(VehicleDetailsDTO::getVisVehicleno)
-			            .orElse(null) 
-			);
-
-			newRequest.setVisVehicleType(
-			    Optional.ofNullable(newAppointmentDTO)
-			            .map(AppointmentDTO::getVehicleDetails)
-			            .map(VehicleDetailsDTO::getVisVehicleType)
-			            .orElse(null)
-			);
-
-			newRequest.setVisDriverDlNo(
-			    Optional.ofNullable(newAppointmentDTO)
-			            .map(AppointmentDTO::getVehicleDetails)
-			            .map(VehicleDetailsDTO::getVisDriverDlNo)
-			            .orElse(null) 
-			);
-
-	
-		
-		newRequest.setVisDriverDlUpto(
-			    Optional.ofNullable(newAppointmentDTO) 
-			            .map(AppointmentDTO::getVehicleDetails) 
-			            .map(VehicleDetailsDTO::getVisDriverDlUpto) 
-			            .orElse(null)
-			);
+//
+//			newRequest.setVisVehicleno(
+//			    Optional.ofNullable(newAppointmentDTO)
+//			            .map(AppointmentDTO::getVehicleDetails)
+//			            .map(VehicleDetailsDTO::getVisVehicleno)
+//			            .orElse(null) 
+//			);
+//
+//			newRequest.setVisVehicleType(
+//			    Optional.ofNullable(newAppointmentDTO)
+//			            .map(AppointmentDTO::getVehicleDetails)
+//			            .map(VehicleDetailsDTO::getVisVehicleType)
+//			            .orElse(null)
+//			);
+//
+//			newRequest.setVisDriverDlNo(
+//			    Optional.ofNullable(newAppointmentDTO)
+//			            .map(AppointmentDTO::getVehicleDetails)
+//			            .map(VehicleDetailsDTO::getVisDriverDlNo)
+//			            .orElse(null) 
+//			);
+//
+//	
+//		
+//		newRequest.setVisDriverDlUpto(
+//			    Optional.ofNullable(newAppointmentDTO) 
+//			            .map(AppointmentDTO::getVehicleDetails) 
+//			            .map(VehicleDetailsDTO::getVisDriverDlUpto) 
+//			            .orElse(null)
+//			);
 
         AppointmentDTO responseDTO = new AppointmentDTO();
 		System.out.println("responseDto: "+responseDTO);
@@ -84,4 +88,11 @@ public class AppointmentService {
 		BeanUtils.copyProperties(savedRequest, responseDTO);	    
 		return responseDTO;
 	}
+	
+	public List<AppointmentDTO> getVisitRequests(String cmpCd, String visitorId){
+		List<AppointmentDTO> requests = repo.getByCmpcdAndId(cmpCd, visitorId);
+		return requests;
+	}
+	
+	
 }

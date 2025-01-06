@@ -1,6 +1,7 @@
 package com.translineindia.vms.security;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 //import com.transline.servicesImp.CustomUserDetailServices;
@@ -38,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		//printAllHeaders(request);
 		
 		String requestHeader = request.getHeader("Authorization");
 		logger.info(" Header :  {}", requestHeader);
@@ -78,5 +81,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 		}		
 		filterChain.doFilter(request, response);
+	}
+	
+	private void printAllHeaders(HttpServletRequest request) {				
+		System.out.println(request.getRemoteHost()+":"+request.getRemotePort());
+		
 	}
 }

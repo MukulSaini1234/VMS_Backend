@@ -12,8 +12,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Data
-@Getter
-@Setter
 @Validated
 public class VehicleDetailsDTO {
 	@Size(max = 20, message = "Visitor Driver Name must not exceed 20 characters")

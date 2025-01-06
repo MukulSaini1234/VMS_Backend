@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -13,9 +15,16 @@ import lombok.Data;
 @Data
 public class AppointmentEntity {
 
-	@Id
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Assuming your table is configured to auto-increment this column
+	@Column(name = "req_id")
+	private Long reqId; // Using Long for primary key to accommodate large number
+	
 	@Column(name = "emp_id", length = 10)
 	private String empid;
+	
+	@Column(name = "created_by", length = 50)
+	private String visitorId;
 	
 	@Column(name = "emp_name", length = 30)
 	private String empName;
@@ -38,8 +47,8 @@ public class AppointmentEntity {
 	@Column(name = "id_proof", length = 20)
 	private String idProof;
 	
-//	@Column(name = "id_proof_file")
-//	private byte[] fileData;
+	@Column(name = "id_proof_file")
+	private byte[] fileData;
 	
 	@Column(name = "vis_name", length = 30)
 	private String visName;
@@ -53,8 +62,8 @@ public class AppointmentEntity {
 	@Column(name = "vis_accessories", length = 30)
 	private String visAccessories;
 	
-//	@Column(name = "vis_photo")
-//	private byte[] visPhoto;
+	@Column(name = "vis_photo")
+	private byte[] visPhoto;
 	
 	@Column(name = "vis_vehicle")
 	private Boolean visVehicle;
