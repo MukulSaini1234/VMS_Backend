@@ -1,6 +1,8 @@
 package com.translineindia.vms.entity;
 
 
+import java.time.LocalDateTime;
+
 import com.translineindia.vms.config.EncryptionUtil;
 
 import jakarta.persistence.Column;
@@ -52,4 +54,7 @@ public class Visitor {
 		
 	@Column(length = 100,nullable = false)
 	private String password;
+	
+	@Column(name = "password_updated_at")
+	private LocalDateTime passwordUpdatedDate; 
 }

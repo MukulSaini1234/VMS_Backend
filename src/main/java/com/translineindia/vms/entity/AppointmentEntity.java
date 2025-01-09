@@ -1,12 +1,17 @@
 package com.translineindia.vms.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -50,23 +55,7 @@ public class AppointmentEntity {
 	@Column(name = "id_proof_file")
 	private byte[] fileData;
 	
-	@Column(name = "vis_name", length = 30)
-	private String visName;
 	
-	@Column(name = "vis_DOB")
-	private LocalDate visDob;
-	
-	@Column(name = "vis_num", length = 13)
-	private String visNum;
-	
-	@Column(name = "vis_accessories", length = 30)
-	private String visAccessories;
-	
-	@Column(name = "vis_photo")
-	private byte[] visPhoto;
-	
-	@Column(name = "vis_vehicle")
-	private Boolean visVehicle;
 	
 	@Column(name = "vis_drivername", length = 20)
 	private String visDrivername;
@@ -83,4 +72,6 @@ public class AppointmentEntity {
 	@Column(name = "vis_driverdlupto", length = 20)
 	private LocalDate visDriverDlUpto;
 	
+	
+
 }

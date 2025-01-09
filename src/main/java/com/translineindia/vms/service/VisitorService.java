@@ -1,6 +1,7 @@
 package com.translineindia.vms.service;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.translineindia.vms.dtos.AppointmentDTO;
+import com.translineindia.vms.dtos.PasswordChangeReqDTO;
 //import com.example.demo.excep.ResourceNotFoundException;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.entity.AppointmentEntity;
@@ -99,7 +101,7 @@ public class VisitorService {
 						
 //		if(visitorRepo.findByEmail(visitor.getEmail())==null) {		
 		try {
-			Visitor savedVisitor=visitorRepo.save(visitor);
+			Visitor savedVisitor=visitorRepo.save(visitor); 
 			VisitorLoginDTO visitorDTO=new VisitorLoginDTO();
 			BeanUtils.copyProperties(savedVisitor, visitorDTO);
 			return visitorDTO;	
@@ -127,5 +129,31 @@ public class VisitorService {
 		return visitor.isPresent()?visitor.get():null;
 	}	
 	
+	public VisitorLoginDTO changePassword(PasswordChangeReqDTO passwordChangeReq) {
+		System.out.println("cmpCd :"+passwordChangeReq.getCmpCd());
+		System.out.println("email: "+passwordChangeReq.getEmail());
+		System.out.println("newPassword: "+passwordChangeReq.getNewPassword());
+	    Visitor visitor = visitorRepo.findByCmpCdAndEmail(passwordChangeReq.getCmpCd(), passwordChangeReq.getEmail())
+	            .orElseThrow(() -> new ResourceNotFoundException("User", "email", passwordChangeReq.getEmail()));
+	    System.out.println("vis email :"+visitor.getEmail());
+	    System.out.println("vis password: "+visitor.getPassword());
+	    if (passwordEncoder.matches(passwordChangeReq.getNewPassword(), visitor.getPassword())) {
+	        throw new DuplicateEntryException("New password cannot be the same as the current password.");
+	    }
 
+	    String encodedPassword = passwordEncoder.encode(passwordChangeReq.getNewPassword());
+	    visitor.setPassword(encodedPassword); 
+
+	    visitor.setPasswordUpdatedDate(LocalDateTime.now());
+	    Visitor savedVisitor = visitorRepo.save(visitor);
+	    VisitorLoginDTO newVisitorCred = new VisitorLoginDTO() ;
+
+	    newVisitorCred.setEmail(savedVisitor.getEmail());
+	    newVisitorCred.setPassword(savedVisitor.getPassword());
+	    newVisitorCred.setPasswordUpdatedDate(savedVisitor.getPasswordUpdatedDate());
+	    return newVisitorCred;
+	}
+	
+	
+	
 }

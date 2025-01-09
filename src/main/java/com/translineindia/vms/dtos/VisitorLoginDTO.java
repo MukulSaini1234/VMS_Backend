@@ -1,6 +1,10 @@
 package com.translineindia.vms.dtos;
 
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -36,4 +40,7 @@ public class VisitorLoginDTO {
 	private String address;
 	
 	private String username;
+	
+	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+	private LocalDateTime passwordUpdatedDate;
 }

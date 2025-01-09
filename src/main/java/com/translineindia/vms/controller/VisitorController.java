@@ -22,7 +22,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,8 +35,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.translineindia.vms.config.AuthUtils;
 import com.translineindia.vms.dtos.AppointmentDTO;
+import com.translineindia.vms.dtos.PasswordChangeReqDTO;
 import com.translineindia.vms.dtos.VisitorDTO;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
+import com.translineindia.vms.dtos.VisitorRequestDtlsDTO;
+import com.translineindia.vms.dtos.VisitorRequestMstDTO;
+import com.translineindia.vms.entity.AppointmentEntity;
+import com.translineindia.vms.entity.VisitorRequestMst;
 import com.translineindia.vms.security.JwtHelper;
 import com.translineindia.vms.security.VisitorLogin;
 import com.translineindia.vms.service.AppointmentService;
@@ -64,21 +71,21 @@ public class VisitorController {
 		return ResponseEntity.ok(visitorDTO);
 	}
    
-	@PostMapping(path="/appointment",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public ResponseEntity Appointment(@Valid @ModelAttribute AppointmentDTO dto) throws IOException{
-		System.out.println(dto);
-//		System.out.println(params);
-		AppointmentDTO responseDto = appointmentService.RequestAppointment(dto);		
-		return ResponseEntity.status(HttpStatus.CREATED).body("Ok");
-	}
+//	@PostMapping(path="/appointment",consumes = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<String> Appointment(@Valid @RequestBody AppointmentDTO dto) throws IOException{
+//		System.out.println(dto);
+////		System.out.println(params);
+//		List<AppointmentEntity> responseDto = appointmentService.RequestAppointment(dto);
+//		return ResponseEntity.status(HttpStatus.CREATED).body("Ok");
+//	}
 	
-    @PostMapping("/visitRequest")
-    public ResponseEntity visitRequest(@RequestParam Map<String,String> params) {
-    	System.out.println("param "+params);
+//    @PostMapping("/visitRequest")
+//    public ResponseEntity visitRequest(@RequestParam Map<String,String> params) {
+//    	System.out.println("param "+params);
 //    	AppointmentDTO responseDto = appointmentService.RequestAppointment(dto);		
-		return ResponseEntity.status(HttpStatus.CREATED).body("Ok");
-    	
-    }
+//		return ResponseEntity.status(HttpStatus.CREATED).body("Ok");
+//    	
+//    }
 	
     @PostMapping(value="/files",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity handleFiles(@RequestParam MultipartFile file) {
@@ -99,10 +106,46 @@ public class VisitorController {
         return "It Works";
     }
 	
+    
+    @PutMapping("/changePassword")
+    public ResponseEntity<VisitorLoginDTO> changePassword(
+                            @RequestBody PasswordChangeReqDTO passwordChangeRequest) {
+        try {
+//        	String cmpCd=AuthUtils.getCurrentUser().getCmpCd();
+//            LoginDTO updatedUser = loginServiceImpl.changePassword(cmpCd,email, passwordChangeRequest.getNewPassword());
+        	System.out.println("email :"+passwordChangeRequest.getEmail());
+        	System.out.println(passwordChangeRequest.getCmpCd());
+        	System.out.println(passwordChangeRequest.getNewPassword());
+        	VisitorLoginDTO visLoginDTO = visitorService.changePassword(passwordChangeRequest);
+            return ResponseEntity.ok(visLoginDTO);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+	
+    // New api added on 07-01-24
+    @PostMapping("/request") // working now on 8Th 
+    public ResponseEntity<String> createVisitorRequest(@RequestBody @Valid VisitorRequestMstDTO request) {
+    	System.out.println("request :"+request);
+    	appointmentService.createVisitorRequest(request);
+//        return ResponseEntity.ok("Appointment request saved successfully.");
+    	return ResponseEntity.status(HttpStatus.CREATED).body("Appointment request saved Successfully");
+    }
+    
+    // Get API ADDED on 08-01-25
     @GetMapping("getAppointmentRequests")
-    public ResponseEntity<Optional<List<AppointmentDTO>>> getVisitorRequests(@RequestParam String cmpCd, String visitorId) {
-    	Optional<List<AppointmentDTO>> req = Optional.ofNullable(appointmentService.getVisitRequests(cmpCd, visitorId));
+    public ResponseEntity<Optional<VisitorRequestMst>> getVisitorRequests(@RequestParam String cmpCd, String visitorId) {
+    	Optional<VisitorRequestMst> req = Optional.ofNullable(appointmentService.getVisitorDetailsByVisitorId(visitorId));
     	return ResponseEntity.status(HttpStatus.OK).body(req);
     }
+    // Put api added on 08-01-25
+    @PutMapping("/update-vehicle/{id}")
+    public VisitorRequestMstDTO updateVehicleDetails(@PathVariable("id") Long id, 
+                                                  @RequestBody VisitorRequestMst updatedVisitorRequest) {
+        return appointmentService.updateVehicleDetails(id, updatedVisitorRequest);
+    }
+    
+    
+    
     
 }

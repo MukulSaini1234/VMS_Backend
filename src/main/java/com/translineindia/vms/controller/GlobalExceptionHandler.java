@@ -69,4 +69,9 @@ public class GlobalExceptionHandler {
 	public ResponseEntity handle(UsernameNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());		
 	}
+	
+	@ExceptionHandler(DuplicateEntryException.class)
+	public ResponseEntity<Object> handleDuplicateEntryException(DuplicateEntryException ex) {
+		return ResponseEntity.badRequest().body(ex.getMessage());
+	}
 }

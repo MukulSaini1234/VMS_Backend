@@ -17,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.translineindia.vms.dtos.JwtRequest;
 import com.translineindia.vms.dtos.JwtResponse;
+import com.translineindia.vms.dtos.PasswordChangeReqDTO;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.entity.Visitor;
 import com.translineindia.vms.repository.VisitorRepository;
@@ -97,7 +100,6 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(visitorDTO);
 	 }
 	
-  
 	
 	
 }
