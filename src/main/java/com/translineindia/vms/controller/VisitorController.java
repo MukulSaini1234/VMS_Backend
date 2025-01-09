@@ -134,14 +134,16 @@ public class VisitorController {
     
     // Get API ADDED on 08-01-25
     @GetMapping("getAppointmentRequests")
-    public ResponseEntity<Optional<VisitorRequestMst>> getVisitorRequests(@RequestParam String cmpCd, String visitorId) {
-    	Optional<VisitorRequestMst> req = Optional.ofNullable(appointmentService.getVisitorDetailsByVisitorId(visitorId));
+    public ResponseEntity<List<VisitorRequestMst>> getVisitorRequests(@RequestParam String cmpCd, String visitorId) {
+    	List<VisitorRequestMst> req = appointmentService.getVisitorDetailsByVisitorId(visitorId);
     	return ResponseEntity.status(HttpStatus.OK).body(req);
     }
     // Put api added on 08-01-25
-    @PutMapping("/update-vehicle/{id}")
+    @PutMapping("update-vehicle/{id}")
     public VisitorRequestMstDTO updateVehicleDetails(@PathVariable("id") Long id, 
-                                                  @RequestBody VisitorRequestMst updatedVisitorRequest) {
+                                                  @RequestBody VisitorRequestMstDTO updatedVisitorRequest) {
+    	System.out.print("id ;"+id);
+    	System.out.print("vis dt:"+updatedVisitorRequest);
         return appointmentService.updateVehicleDetails(id, updatedVisitorRequest);
     }
     

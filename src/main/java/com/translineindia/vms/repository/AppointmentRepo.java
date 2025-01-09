@@ -1,6 +1,7 @@
 package com.translineindia.vms.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -35,7 +36,10 @@ public interface AppointmentRepo extends JpaRepository<VisitorRequestMst ,Long>{
 		    """, nativeQuery = true)
 		    List<Object[]> findVisitorDetailsByVisitorId(@Param("visitorId") String visitorId);
 
-        public List<VisitorRequestMst> findByVisitorId(String visitorId);
+		// Added on 09-01-25    
+		    @Query(value = "SELECT * FROM vis_req_mst vm WHERE vm.visitor_id = :visitorId", nativeQuery = true)
+		    public List<VisitorRequestMst> findByVisitorId(String visitorId);
+
 		    
 	
 }

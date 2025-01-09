@@ -141,6 +141,7 @@
 
 package com.translineindia.vms.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.translineindia.vms.config.EncryptionUtil;
 
 import jakarta.persistence.*;
@@ -165,6 +166,7 @@ public class VisitorRequestDtls {
 
     @ManyToOne
     @JoinColumn(name = "visitor_request_mst_id", referencedColumnName = "vis_mst_id")
+    @JsonBackReference
     private VisitorRequestMst visitorRequestMst;
 
     @PrePersist

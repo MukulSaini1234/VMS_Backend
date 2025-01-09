@@ -184,7 +184,7 @@ public class AppointmentService {
 	        }
 	    }
 	
-	 public VisitorRequestMstDTO updateVehicleDetails(Long id, VisitorRequestMst updatedVisitorRequest) {
+	 public VisitorRequestMstDTO updateVehicleDetails(Long id, VisitorRequestMstDTO updatedVisitorRequest) {
 	        // Retrieve the existing request by ID
 	        VisitorRequestMst existingRequest = repo.findById(id)
 	                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + id));
@@ -195,7 +195,7 @@ public class AppointmentService {
 	        existingRequest.setVehicleType(updatedVisitorRequest.getVehicleType());
 	        existingRequest.setDriverDlNo(updatedVisitorRequest.getDriverDlNo());
 	        existingRequest.setDriverDlUpto(updatedVisitorRequest.getDriverDlUpto());
-	        existingRequest.setHasVehicle(updatedVisitorRequest.getHasVehicle());
+//	        existingRequest.setHasVehicle(updatedVisitorRequest.getHasVehicle());
 
 	        VisitorRequestMst savedDtls=repo.save(existingRequest);
 			VisitorRequestMstDTO masterDTO=new VisitorRequestMstDTO();
@@ -205,14 +205,14 @@ public class AppointmentService {
 	 
 	 
 	 // Following code added on 08-01-25
-	 public VisitorRequestMst getVisitorDetailsByVisitorId(String visitorId) {
+	 public List<VisitorRequestMst> getVisitorDetailsByVisitorId(String visitorId) {
 		 
 		 System.out.println("visitor Id:"+visitorId);
 		 List<VisitorRequestMst> resp = repo.findByVisitorId(visitorId);
-		 System.out.println("Visitor list rep:"+resp);
-		 return (VisitorRequestMst) resp;
+//		 System.out.println("Visitor list rep:"+resp);
+		 return resp;
 		 
-	        // Execute the query
+//	         Execute the query
 //	        List<Object[]> results = repo.findVisitorDetailsByVisitorId(visitorId);
 //
 //	        if (results.isEmpty()) {
