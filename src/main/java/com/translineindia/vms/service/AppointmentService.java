@@ -1,15 +1,23 @@
 package com.translineindia.vms.service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.translineindia.vms.config.EncryptionUtil;
 import com.translineindia.vms.dtos.AppointmentDTO;
@@ -36,6 +44,7 @@ public class AppointmentService {
 	
 	@Autowired
 	private VisitorRequestDetailsRepo dtlsRepo;
+	 private static final String uploadDir = "uploads/";
 	
 //	public List<AppointmentEntity> RequestAppointment(AppointmentDTO dto){
 //		
@@ -141,9 +150,10 @@ public class AppointmentService {
 	
 	
 //	 Following code added on 07-01-25 //working now on 8th
-	 public void createVisitorRequest(VisitorRequestMstDTO visitorRequestMstDTO) {
+	 public VisitorRequestMstDTO createVisitorRequest(VisitorRequestMstDTO visitorRequestMstDTO) {
 	        // Map DTO to Entity for VisitorRequestMst
 	        VisitorRequestMst visitorRequestMst = new VisitorRequestMst();
+	        VisitorRequestMstDTO mstData= new VisitorRequestMstDTO();
 	        visitorRequestMst.setEmpId(visitorRequestMstDTO.getEmpId());
 	        visitorRequestMst.setEmpName(visitorRequestMstDTO.getEmpName());
 	        visitorRequestMst.setVisOrganization(visitorRequestMstDTO.getVisOrganization());
@@ -174,20 +184,34 @@ public class AppointmentService {
 	            visitorRequestDtls.setContactNo(visitorRequestDtlsDTO.getContactNo());
 	            visitorRequestDtls.setAccessories(visitorRequestDtlsDTO.getAccessories());
 	            visitorRequestDtls.setDob(visitorRequestDtlsDTO.getDob());
+//	            Map<String,MultipartFile> files = new HashMap();
+//	            List<MultipartFile> idProofAndPhoto = new ArrayList();
+//	            idProofAndPhoto.add(visitorRequestDtlsDTO.getIdProofFile());
+//	            idProofAndPhoto.add(visitorRequestDtlsDTO.getPhoto());
+//	            files.put("idProod", visitorRequestDtlsDTO.getIdProofFile());
+//	            files.put("photo", visitorRequestDtlsDTO.getPhoto());
+//	            String fileStat = saveFile(visitorRequestDtlsDTO.getIdProofFile());0
 	           
+	            visitorRequestDtls.setPhoto(visitorRequestDtlsDTO.getPhoto());
+	            boolean FileUploadStatus = saveFile(visitorRequestDtlsDTO.getIdProofFile(),uploadDir); 
+	            System.out.println("fileStat :"+ FileUploadStatus);
 
 	            // Set the foreign key relationship
 	            visitorRequestDtls.setVisitorRequestMst(visitorRequestMst); // Set the parent object
 	            
 	            // Save the VisitorRequestDtls entity
-	            dtlsRepo.save(visitorRequestDtls);
+	            VisitorRequestDtls savedData= dtlsRepo.save(visitorRequestDtls);
+	           
+	            BeanUtils.copyProperties(visitorRequestMst, visitorDtlsList);
+	            
 	        }
+	        return mstData;
 	    }
 	
-	 public VisitorRequestMstDTO updateVehicleDetails(Long id, VisitorRequestMstDTO updatedVisitorRequest) {
+	 public VisitorRequestMstDTO updateVehicleDetails(VisitorRequestMstDTO updatedVisitorRequest) {
 	        // Retrieve the existing request by ID
-	        VisitorRequestMst existingRequest = repo.findById(id)
-	                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + id));
+	        VisitorRequestMst existingRequest = repo.findById(updatedVisitorRequest.getId())
+	                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + updatedVisitorRequest.getId()));
 
 	        // Update the vehicle details
 	        existingRequest.setVehicleNo(updatedVisitorRequest.getVehicleNo());
@@ -209,8 +233,80 @@ public class AppointmentService {
 		 
 		 System.out.println("visitor Id:"+visitorId);
 		 List<VisitorRequestMst> resp = repo.findByVisitorId(visitorId);
-//		 System.out.println("Visitor list rep:"+resp);
+		 VisitorRequestMstDTO visitReq = new VisitorRequestMstDTO();
 		 return resp;
+		 
+//		 List<VisitorRequestMstDTO> dtos = resp.stream()
+//				    .map(entity -> {
+//				        VisitorRequestMstDTO dto = new VisitorRequestMstDTO();
+//				        dto.setId(entity.getId());
+////				        dto.setVisitorName(entity.getV);
+////				        dto.setPurpose(entity.getPurpose());
+//				        dto.setEmpId(entity.getEmpId());
+//				        dto.setEmpName(entity.getEmpName());
+//				        dto.setEmpEmail(entity.getEmpEmail());
+//				        dto.setVisOrganization(entity.getVisOrganization());
+//				        dto.setPurpose(entity.getPurpose());
+//				        dto.setFromDate(entity.getFromDate());
+//				        dto.setToDate(entity.getToDate());
+//				        dto.setVisitorAddress(entity.getVisitorAddress());
+//				        dto.setHasVehicle(entity.getHasVehicle());
+//				        dto.setVehicleNo(entity.getVehicleNo());
+//				        dto.setDriverName(entity.getDriverName());
+//				        dto.setVehicleType(entity.getVehicleType());
+//				        dto.setDriverDlNo(entity.getDriverDlNo());
+//				        dto.setDriverDlUpto(entity.getDriverDlUpto());
+//				        dto.setVisitorId(entity.getVisitorId());
+//				       
+//				    })
+//				    .collect(Collectors.toList());
+//		 return dto;
+				       
+//				        VisitorRequestDtlsDTO dtls= new VisitorRequestDtlsDTO();
+//				        dtls.setName(entity.getVisitorDtls().getName());
+				        
+				        
+//				        entity.getEmpId(),
+//				        entity.getEmpName(),
+//				        entity.getEmpEmail(),
+//				        entity.getPurpose(),
+//				        entity.getFromDate(),
+//				        entity.getToDate(),
+//				        entity.getVisitorAddress(),
+//				        entity.getHasVehicle(),
+//				        entity.getVehicleNo(),
+//				        entity.getDriverName(),
+//				        entity.getVehicleType(),
+//				        entity.getDriverDlNo(),
+//				        entity.getDriverDlUpto(),
+//				        entity.getVisitorId(),
+//				        entity.getVisitorDtls()
+				     
+		 
+//		 List<VisitorRequestMstDTO> dtos = resp.stream()
+//				    .map(entity -> new VisitorRequestMstDTO(
+//				        entity.getId(),
+//				        entity.getEmpId(),
+//				        entity.getEmpName(),
+//				        entity.getEmpEmail(),
+//				        entity.getPurpose(),
+//				        entity.getFromDate(),
+//				        entity.getToDate(),
+//				        entity.getVisitorAddress(),
+//				        entity.getHasVehicle(),
+//				        entity.getVehicleNo(),
+//				        entity.getDriverName(),
+//				        entity.getVehicleType(),
+//				        entity.getDriverDlNo(),
+//				        entity.getDriverDlUpto(),
+//				        entity.getVisitorId(),
+//				        entity.getVisitorDtls()
+//				    ))
+//				    .collect(Collectors.toList());
+		 
+		 
+//		 System.out.println("Visitor list rep:"+resp);
+//		 return resp;
 		 
 //	         Execute the query
 //	        List<Object[]> results = repo.findVisitorDetailsByVisitorId(visitorId);
@@ -252,6 +348,32 @@ public class AppointmentService {
 //	        return masterDTO;
 	    }
 	 
-	
+	 public boolean saveFile(MultipartFile file, String uploadDir) {
+		    System.out.println("file: " + file);
+
+		    if (file == null || file.isEmpty()) {
+		        return false; 
+		    }
+
+		    try {
+		        File dir = new File(uploadDir);
+		        if (!dir.exists() && !dir.mkdirs()) {
+		            return false; 
+		        }
+                String originalFilename = "CO001_" + file.getOriginalFilename();
+		        if (originalFilename == null || originalFilename.trim().isEmpty()) {
+		            return false; 
+		        }
+
+		        Path filePath = Paths.get(uploadDir, originalFilename);
+		        Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
+		    } catch (IOException e) {
+		        e.printStackTrace(); 
+		        return false;
+		    }
+                return true; 
+		}
+
+
 	
 }

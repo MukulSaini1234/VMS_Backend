@@ -53,7 +53,7 @@ public class SecurityConfig {
     	SecurityFilterChain filterChain= http
             .csrf(csrf->csrf.disable()) // Disable CSRF for stateless APIs            
             .authorizeHttpRequests(auth -> auth        		
-                .requestMatchers("/auth/**","/public/**").permitAll() // Allow public access to authentication endpoints                
+                .requestMatchers("/auth/**","/public/**","/admin/**").permitAll() // Allow public access to authentication endpoints                
                 .anyRequest().authenticated() // Secure all other endpoints                                
             )  
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions

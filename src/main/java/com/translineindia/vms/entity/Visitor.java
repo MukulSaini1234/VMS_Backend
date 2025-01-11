@@ -57,4 +57,8 @@ public class Visitor {
 	
 	@Column(name = "password_updated_at")
 	private LocalDateTime passwordUpdatedDate; 
+	
+	// Added on 10-01-25
+	@Column(name = "role", nullable=false)
+	private String role;
 }

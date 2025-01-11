@@ -43,4 +43,7 @@ public class VisitorLoginDTO {
 	
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime passwordUpdatedDate;
+	
+	// ADDED ON 10-01-25
+	private String role;
 }

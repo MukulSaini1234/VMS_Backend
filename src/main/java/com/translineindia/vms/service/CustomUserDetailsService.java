@@ -17,16 +17,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 		
 		@Autowired
 		private VisitorService visitorService;
-		
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        // Fetch user from database or other source
-//        // For example:
-//        if ("admin".equals(username)) {
-//            return new CustomUserDetails("admin", "password", true, List.of());
-//        }
-//        throw new UsernameNotFoundException("User not found");
-//    }
 	
 	   @Override
 	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -47,6 +37,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 				   throw new UsernameNotFoundException("Visitor Not Found");
 			   }
 		   }
+		   else if (username.startsWith("AD::")) { // Handle Admin user // or else condition other than visitor
+			   // tables are different but this class is same so need to check for different user type....
+	            username = username.substring(4);
+	            String cmpCd = "";
+	            String idOrEmail = "";
+	            
+	            if (username.contains("::")) {
+	                cmpCd = username.split("::")[0];
+	                idOrEmail = username.split("::")[1];
+	            }
+	            System.out.println("username :"+username);
+	            Visitor visitor=visitorService.getVisitorByIdOrEmail(cmpCd, idOrEmail); //make different table , dofferent entity and therefore service
+	            if (visitor != null) {
+	            	return new VisitorLogin(visitor); // Custom UserDetails for Admin
+	            } else {
+	                throw new UsernameNotFoundException("Admin Not Found");
+	            }
+	        }
 		   throw new UsernameNotFoundException("User not found");
 		   
 //	        // Replace this with a database lookup for Visitor

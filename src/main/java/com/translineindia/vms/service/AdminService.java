@@ -1,3 +1,16 @@
+//package com.translineindia.vms.service;
+//
+//public class AdminService {
+//
+//	
+//	  public Admin getAdminByIdOrEmail(String cmpCd, String idOrEmail) {
+//	        // Fetch admin from the database using cmpCd and idOrEmail
+//	        // Example code:
+//	        // return adminRepository.findByCmpCdAndIdOrEmail(cmpCd, idOrEmail);
+//	        return null; // Replace with actual implementation
+//	    }
+//	
+//}
 package com.translineindia.vms.service;
 
 
@@ -24,7 +37,7 @@ import com.translineindia.vms.repository.VisitorRepository;
 import com.translineindia.vms.exception.*;
 
 @Service
-public class VisitorService {
+public class AdminService {
 	
 	@Autowired
 	private VisitorRepository visitorRepo;
@@ -51,7 +64,7 @@ public class VisitorService {
 	
 	
 	public String getNextVisitorId(String cmpCd) {
-	    String prefix = "VS";
+	    String prefix = "AD";
 	    String prevId = "";
 	    Optional<String> data = visitorRepo.getMaxVisitorId(cmpCd);
 
@@ -65,7 +78,7 @@ public class VisitorService {
 	    try {
 	        prevSeq = Integer.parseInt(prevId.substring(prefix.length())); // Extract numeric part after prefix
 	    } catch (NumberFormatException | StringIndexOutOfBoundsException e) {
-	        throw new IllegalArgumentException("Invalid previous visitor ID format: " + prevId, e);
+	        throw new IllegalArgumentException("Invalid previous admin ID format: " + prevId, e);
 	    }
 
 	    int nextSeq = prevSeq + 1; // Increment sequence
@@ -97,7 +110,7 @@ public class VisitorService {
 		visitor.setCmpCd(newVisitorDTO.getCmpCd());		
 		visitor.setVisitorCmpName(newVisitorDTO.getVisCmpName());
 		visitor.setAddress(newVisitorDTO.getAddress());
-		visitor.setRole("VISITOR");
+		visitor.setRole("ADMIN");
 		System.out.println("visitor :"+visitor);
 						
 //		if(visitorRepo.findByEmail(visitor.getEmail())==null) {		
@@ -120,10 +133,23 @@ public class VisitorService {
 	
 	
 	public String generateUsername() {
-        String maxSerialStr = visitorRepo.findMaxSerialNumber();
+	    String maxSerialStr = visitorRepo.findMaxSerialNumber();
+        if (maxSerialStr != null && maxSerialStr.startsWith("AD")) {
+	    String numericPart = maxSerialStr.substring(2);
+             int newSerial = Integer.parseInt(numericPart) + 1;
+             return "AD" + String.format("%04d", newSerial);
+	    }
+
+	   return "AD0001"; 
+	}
+	
+	/*
+	 *  public String generateUsername() {
+        String maxSerialStr = visitorRepo.findMaxSerialNumber().startsWith("AD");
         int newSerial = (maxSerialStr != null) ? Integer.parseInt(maxSerialStr) + 1 : 1;
-        return "VS" + String.format("%04d", newSerial); // Pad with leading zeros if needed
-    }
+        return "AD" + String.format("%04d", newSerial); // Pad with leading zeros if needed
+    }*/
+
 	
 	public Visitor getVisitorByIdOrEmail(String cmpCd, String IdOrEmail) {
 		Optional<Visitor> visitor=visitorRepo.getVisitor(cmpCd, IdOrEmail);

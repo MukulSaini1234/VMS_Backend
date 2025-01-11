@@ -1,7 +1,12 @@
 package com.translineindia.vms.controller;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.transline.vms.utils.ShortUniqueIdGenerator;
 import com.translineindia.vms.config.AuthUtils;
 import com.translineindia.vms.dtos.AppointmentDTO;
 import com.translineindia.vms.dtos.PasswordChangeReqDTO;
@@ -47,7 +54,9 @@ import com.translineindia.vms.security.VisitorLogin;
 import com.translineindia.vms.service.AppointmentService;
 import com.translineindia.vms.service.VisitorService;
 
+import jakarta.persistence.criteria.Path;
 import jakarta.validation.Valid;
+import jakarta.servlet.ServletContext;
 
 @RestController
 @RequestMapping("/api/visitors")
@@ -60,10 +69,13 @@ public class VisitorController {
 	@Autowired
 	private RestTemplate restTemplate;
 	
+	@Autowired
+	private ServletContext servletContext;
+	
 	 
     @Autowired
 	private AppointmentService appointmentService;
-   
+  
     @GetMapping("/visitor-details")
 	public ResponseEntity<VisitorDTO> getVisitorDetails(){    	
     	VisitorDTO visitorDTO=new VisitorDTO();
@@ -124,12 +136,15 @@ public class VisitorController {
     }
 	
     // New api added on 07-01-24
-    @PostMapping("/request") // working now on 8Th 
-    public ResponseEntity<String> createVisitorRequest(@RequestBody @Valid VisitorRequestMstDTO request) {
+    @PostMapping(value ="/request" , consumes = "multipart/form-data") // working now on 8Th 
+    public VisitorRequestMstDTO createVisitorRequest(@ModelAttribute @Valid VisitorRequestMstDTO request) {
     	System.out.println("request :"+request);
-    	appointmentService.createVisitorRequest(request);
+    	
+    	
+    	VisitorRequestMstDTO res = appointmentService.createVisitorRequest(request);
 //        return ResponseEntity.ok("Appointment request saved successfully.");
-    	return ResponseEntity.status(HttpStatus.CREATED).body("Appointment request saved Successfully");
+    	return res;
+    	
     }
     
     // Get API ADDED on 08-01-25
@@ -139,15 +154,13 @@ public class VisitorController {
     	return ResponseEntity.status(HttpStatus.OK).body(req);
     }
     // Put api added on 08-01-25
-    @PutMapping("update-vehicle/{id}")
-    public VisitorRequestMstDTO updateVehicleDetails(@PathVariable("id") Long id, 
+    @PatchMapping("update-vehicle")
+    public VisitorRequestMstDTO updateVehicleDetails(
                                                   @RequestBody VisitorRequestMstDTO updatedVisitorRequest) {
-    	System.out.print("id ;"+id);
+//    	System.out.print("id ;"+id);
     	System.out.print("vis dt:"+updatedVisitorRequest);
-        return appointmentService.updateVehicleDetails(id, updatedVisitorRequest);
+        return appointmentService.updateVehicleDetails(updatedVisitorRequest);
     }
     
-    
-    
-    
+       
 }
