@@ -61,4 +61,11 @@ public class VisitorRequestMst {
 	@OneToMany(mappedBy = "visitorRequestMst",cascade = CascadeType.ALL , orphanRemoval = true)
 	@JsonManagedReference
 	private List<VisitorRequestDtls> visitorDtls;
+	private String cmpCd;
+	
+	@Override
+	public String toString() {
+	    return null;
+	}
+
 }

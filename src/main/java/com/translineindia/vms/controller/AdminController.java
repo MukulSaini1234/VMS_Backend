@@ -25,17 +25,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.translineindia.vms.dtos.AdminLoginDTO;
 import com.translineindia.vms.dtos.JwtRequest;
 import com.translineindia.vms.dtos.JwtResponse;
 import com.translineindia.vms.dtos.PasswordChangeReqDTO;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
-import com.translineindia.vms.entity.Visitor;
-import com.translineindia.vms.repository.VisitorRepository;
+import com.translineindia.vms.entity.Admin;
+import com.translineindia.vms.entity.Login;
+import com.translineindia.vms.repository.LoginRepository;
 import com.translineindia.vms.security.JwtHelper;
-import com.translineindia.vms.security.VisitorLogin;
+import com.translineindia.vms.security.UserPrincipal;
 import com.translineindia.vms.service.AdminService;
 import com.translineindia.vms.service.CustomUserDetailsService;
-import com.translineindia.vms.service.VisitorService;
+import com.translineindia.vms.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -65,10 +67,10 @@ public class AdminController {
 	
 	@PostMapping("/login")
 	public ResponseEntity<JwtResponse> loginVisitor(@Valid @RequestBody JwtRequest jwtRequest) {		 	
-		//validate if user exists or not		
-		Visitor visitor = adminService.getVisitorByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());		
+		//validate if admin exists or not		
+		Admin admin = adminService.getAdminByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		 if(visitor!=null && passwordEncoder.matches(jwtRequest.getUserPw(), visitor.getPassword())) {
+		 if(admin!=null && passwordEncoder.matches(jwtRequest.getUserPw(), admin.getPassword())) {
 			 	String userNameToken = "AD::" + jwtRequest.getCmpCd()+ "::" +jwtRequest.getUserId();
 			    String token = this.jwtHelper.generateToken(userNameToken);
 				long expirationTime = System.currentTimeMillis() + this.jwtHelper.getTokenValidity() * 1000;
@@ -96,11 +98,13 @@ public class AdminController {
 	}
 	
 	@PostMapping("/register")
-	 public ResponseEntity<VisitorLoginDTO> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){ 	 
-		VisitorLoginDTO visitorDTO = adminService.createUser(newVisitorDTO);	 
-		return ResponseEntity.status(HttpStatus.CREATED).body(visitorDTO);
+	 public ResponseEntity<AdminLoginDTO> createUser(@RequestBody @Valid AdminLoginDTO newAdminDTO){ 	 
+		AdminLoginDTO adminDTO = adminService.createUser(newAdminDTO);	 
+		return ResponseEntity.status(HttpStatus.CREATED).body(adminDTO);
 	 }
 	
+//	  @PreAuthorize("hasRole('ADMIN')")
 	
+	  
 	
 }

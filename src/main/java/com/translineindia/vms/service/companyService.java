@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.dtos.companyDTO;
-import com.translineindia.vms.entity.Visitor;
-import com.translineindia.vms.repository.VisitorRepository;
+import com.translineindia.vms.entity.Login;
+import com.translineindia.vms.repository.LoginRepository;
 import com.translineindia.vms.repository.CompanyRepository;
 
 @Service

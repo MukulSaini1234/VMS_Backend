@@ -3,11 +3,11 @@ package com.translineindia.vms.config;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.translineindia.vms.entity.Visitor;
-import com.translineindia.vms.security.VisitorLogin;
+import com.translineindia.vms.entity.Login;
+import com.translineindia.vms.security.UserPrincipal;
 
 public class AuthUtils {
-	public static Visitor getCurrentVisitor() {
-		return ((VisitorLogin)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getVisitor();
+	public static Login getCurrentVisitor() {
+		return ((UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getLogin();
 	}
 }

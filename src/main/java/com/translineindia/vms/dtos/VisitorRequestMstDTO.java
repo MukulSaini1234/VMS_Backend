@@ -45,4 +45,7 @@ public class VisitorRequestMstDTO {
     @NotEmpty(message = "Visitor Id cannot be empty")
     private String visitorId; // added on 08-01-25
     private List<VisitorRequestDtlsDTO> visitorDtls; // Nested DTO list
+    @NotNull
+    @NotEmpty
+    private String cmpCd;
 }

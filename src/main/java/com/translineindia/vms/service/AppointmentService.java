@@ -25,7 +25,7 @@ import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.dtos.VisitorRequestDtlsDTO;
 import com.translineindia.vms.dtos.VisitorRequestMstDTO;
 import com.translineindia.vms.entity.AppointmentEntity;
-import com.translineindia.vms.entity.Visitor;
+import com.translineindia.vms.entity.Login;
 import com.translineindia.vms.entity.VisitorRequestDtls;
 import com.translineindia.vms.entity.VisitorRequestMst;
 import com.translineindia.vms.exception.ConflictException;
@@ -226,6 +226,14 @@ public class AppointmentService {
 			BeanUtils.copyProperties(savedDtls, masterDTO);
 			return masterDTO;	
 	    }
+	
+	 // added on 14-01-25
+	 public List<VisitorRequestMst> getAllVisitorRequest(String cmpCd){
+		 System.out.println("cmpCd: "+cmpCd);
+		 List<VisitorRequestMst> allRequests = repo.findByCmpCd(cmpCd);
+         System.out.println("output :"+allRequests);
+		 return allRequests;
+	 }
 	 
 	 
 	 // Following code added on 08-01-25

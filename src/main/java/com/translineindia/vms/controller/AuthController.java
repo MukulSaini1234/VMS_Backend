@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +26,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.translineindia.vms.config.AuthUtils;
 import com.translineindia.vms.dtos.JwtRequest;
 import com.translineindia.vms.dtos.JwtResponse;
+import com.translineindia.vms.dtos.LoginDTO;
+import com.translineindia.vms.dtos.NewLoginDTO;
 import com.translineindia.vms.dtos.PasswordChangeReqDTO;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
-import com.translineindia.vms.entity.Visitor;
-import com.translineindia.vms.repository.VisitorRepository;
+import com.translineindia.vms.entity.Login;
+import com.translineindia.vms.repository.LoginRepository;
 import com.translineindia.vms.security.JwtHelper;
-import com.translineindia.vms.security.VisitorLogin;
+import com.translineindia.vms.security.UserPrincipal;
 import com.translineindia.vms.service.CustomUserDetailsService;
-import com.translineindia.vms.service.VisitorService;
+import com.translineindia.vms.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -60,25 +64,28 @@ public class AuthController {
 	private PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
 			
 	@Autowired
-	private VisitorService visitorService;
+	private UserService userService;
 	
 	@PostMapping("/login")
 	public ResponseEntity<JwtResponse> loginVisitor(@Valid @RequestBody JwtRequest jwtRequest) {		 	
 		//validate if user exists or not		
-		Visitor visitor = visitorService.getVisitorByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());		
+		Login visitor = userService.getVisitorByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 if(visitor!=null && passwordEncoder.matches(jwtRequest.getUserPw(), visitor.getPassword())) {
-			 	String userNameToken = "VS::" + jwtRequest.getCmpCd()+ "::" +jwtRequest.getUserId();
+			 	String userNameToken = jwtRequest.getCmpCd()+ "::" +jwtRequest.getUserId();
 			    String token = this.jwtHelper.generateToken(userNameToken);
+			    System.out.println("userNameToken :"+userNameToken);
 				long expirationTime = System.currentTimeMillis() + this.jwtHelper.getTokenValidity() * 1000;
 				
 				String time = sdf.format(new Date(expirationTime));
 				
+				 
 				JwtResponse response = JwtResponse.builder()
 						.status("success")
 						.message("Login Successfull")
 						.token(token)
 						.timestamp(time)
+						.Login(visitor)
 						.build();
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			 
@@ -94,12 +101,32 @@ public class AuthController {
 		//VS$cmpCd$visitorId || VS$cmpCd$email			
 	}
 	
+	
 	@PostMapping("/register")
-	 public ResponseEntity<VisitorLoginDTO> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){ 	 
-		VisitorLoginDTO visitorDTO = visitorService.createUser(newVisitorDTO);	 
-		return ResponseEntity.status(HttpStatus.CREATED).body(visitorDTO);
+	 public ResponseEntity<LoginDTO> createUser(@RequestBody @Valid VisitorLoginDTO newVisitorDTO){
+		System.out.println("visitor dto: "+newVisitorDTO);
+		System.out.println("vis cmp name:"+newVisitorDTO.getVisCmpName());
+		if(!newVisitorDTO.getUserId().startsWith("VS")) {
+			throw new RuntimeException("Visitor Id must be started with VS");
+		}
+		
+		NewLoginDTO dto=new NewLoginDTO();
+		BeanUtils.copyProperties(newVisitorDTO, dto);
+		dto.setRole("VISITOR");
+		
+		LoginDTO loginDTO = userService.createUser(dto);	 
+		return ResponseEntity.status(HttpStatus.CREATED).body(loginDTO);
 	 }
 	
-	
+	 @GetMapping("/visitor-details")
+	   	public ResponseEntity<LoginDTO> getVisitorDetails(){    	
+	       	LoginDTO visitorDTO=new LoginDTO();
+	       	BeanUtils.copyProperties(AuthUtils.getCurrentVisitor(), visitorDTO);
+	       	System.out.println("return DTO:"+visitorDTO);
+	   		return ResponseEntity.ok(visitorDTO);
+	   	}
+		
+    
+    
 	
 }

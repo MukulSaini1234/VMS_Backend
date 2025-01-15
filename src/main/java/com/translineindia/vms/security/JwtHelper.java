@@ -50,7 +50,7 @@ public class JwtHelper {
 	}
 
 	// generate token for user
-	public String generateToken(VisitorLogin userDetails) {
+	public String generateToken(UserPrincipal userDetails) {
 		Map<String, Object> claims = new HashMap<>();
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
@@ -77,7 +77,7 @@ public class JwtHelper {
 	// validate token
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
-		VisitorLogin user = (VisitorLogin) userDetails;
+		UserPrincipal user = (UserPrincipal) userDetails;
 		String usernameToken = user.getCmpCd() + "::" + user.getUsername();
 		return (username.equals(user.getUsername()) || username.equals(usernameToken)) && !isTokenExpired(token);
 	}

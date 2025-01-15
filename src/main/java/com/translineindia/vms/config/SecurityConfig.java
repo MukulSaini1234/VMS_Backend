@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -30,13 +31,15 @@ import com.translineindia.vms.security.JwtAuthenticationEntyPoint;
 import com.translineindia.vms.security.JwtAuthenticationFilter;
 import com.translineindia.vms.security.JwtHelper;
 import com.translineindia.vms.service.CustomUserDetailsService;
-import com.translineindia.vms.service.VisitorService;
+import com.translineindia.vms.service.UserService;
 
 //import com.translineindia.vms.security.JwtAuthenticationFilter;
 //import com.translineindia.vms.security.User;
 
 @Configuration
 @EnableWebSecurity
+
+
 public class SecurityConfig {
 		
 	@Autowired
@@ -53,7 +56,8 @@ public class SecurityConfig {
     	SecurityFilterChain filterChain= http
             .csrf(csrf->csrf.disable()) // Disable CSRF for stateless APIs            
             .authorizeHttpRequests(auth -> auth        		
-                .requestMatchers("/auth/**","/public/**","/admin/**").permitAll() // Allow public access to authentication endpoints                
+                .requestMatchers("/auth/**","/public/**").permitAll() // Allow public access to authentication endpoints   
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated() // Secure all other endpoints                                
             )  
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions

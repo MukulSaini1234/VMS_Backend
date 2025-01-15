@@ -24,15 +24,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.translineindia.vms.dtos.AdminLoginDTO;
 import com.translineindia.vms.dtos.AppointmentDTO;
 import com.translineindia.vms.dtos.PasswordChangeReqDTO;
 //import com.example.demo.excep.ResourceNotFoundException;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
+import com.translineindia.vms.entity.Admin;
 import com.translineindia.vms.entity.AppointmentEntity;
-import com.translineindia.vms.entity.Visitor;
-import com.translineindia.vms.entity.VisitorId;
+import com.translineindia.vms.entity.Login;
+import com.translineindia.vms.entity.LoginId;
+import com.translineindia.vms.repository.AdminRepo;
 import com.translineindia.vms.repository.AppointmentRepo;
-import com.translineindia.vms.repository.VisitorRepository;
+import com.translineindia.vms.repository.LoginRepository;
 
 import com.translineindia.vms.exception.*;
 
@@ -40,7 +43,10 @@ import com.translineindia.vms.exception.*;
 public class AdminService {
 	
 	@Autowired
-	private VisitorRepository visitorRepo;
+	private LoginRepository visitorRepo;
+	
+	@Autowired
+	private AdminRepo adminRepo;
 	
 	@Autowired
 	private AppointmentRepo appointmentRepo;
@@ -87,7 +93,7 @@ public class AdminService {
 
 	
 	
-	public VisitorLoginDTO createUser(VisitorLoginDTO newVisitorDTO) {
+	public AdminLoginDTO createUser(AdminLoginDTO newAdminDTO) {
 		
 		//cmpCd exist or not
 		
@@ -96,29 +102,35 @@ public class AdminService {
 //		.orElseThrow(()->new AlreadyExistsException("Email Already Registered"));
 		
 		 // Check if the email already exists for the provided cmpCd
-	    boolean exists = visitorRepo.findByCmpCdAndEmail(newVisitorDTO.getCmpCd(), newVisitorDTO.getEmail()).isPresent();
+	    boolean exists = visitorRepo.findByCmpCdAndEmail(newAdminDTO.getCmpCd(), newAdminDTO.getEmail()).isPresent();
 	    if (exists) {
 	        throw new AlreadyExistsException("Email already registered with the provided company code.");
 	    }
 		 		
-		Visitor visitor=new Visitor();
-		visitor.setFirstName(newVisitorDTO.getFirstName());
-		visitor.setLastName(newVisitorDTO.getLastName());
-		visitor.setEmail(newVisitorDTO.getEmail());				
-		visitor.setPassword(passwordEncoder.encode(newVisitorDTO.getPassword()));
-		visitor.setVisitorId(getNextVisitorId(newVisitorDTO.getCmpCd()));
-		visitor.setCmpCd(newVisitorDTO.getCmpCd());		
-		visitor.setVisitorCmpName(newVisitorDTO.getVisCmpName());
-		visitor.setAddress(newVisitorDTO.getAddress());
-		visitor.setRole("ADMIN");
-		System.out.println("visitor :"+visitor);
+		Admin admin=new Admin();
+		admin.setEmail(newAdminDTO.getEmail());
+		admin.setCmpCd(newAdminDTO.getCmpCd());
+		admin.setName(newAdminDTO.getName());
+		admin.setPassword(passwordEncoder.encode(newAdminDTO.getPassword()));
+		System.out.println("admin :"+admin);
+		
+//		visitor.setFirstName(newVisitorDTO.getFirstName());
+//		visitor.setLastName(newVisitorDTO.getLastName());
+//		visitor.setEmail(newVisitorDTO.getEmail());				
+//		visitor.setPassword(passwordEncoder.encode(newVisitorDTO.getPassword()));
+//		visitor.setVisitorId(getNextVisitorId(newVisitorDTO.getCmpCd()));
+//		visitor.setCmpCd(newVisitorDTO.getCmpCd());		
+//		visitor.setVisitorCmpName(newVisitorDTO.getVisCmpName());
+//		visitor.setAddress(newVisitorDTO.getAddress());
+//		visitor.setRole("ADMIN");
+//		System.out.println("visitor :"+visitor);
 						
 //		if(visitorRepo.findByEmail(visitor.getEmail())==null) {		
 		try {
-			Visitor savedVisitor=visitorRepo.save(visitor); 
-			VisitorLoginDTO visitorDTO=new VisitorLoginDTO();
-			BeanUtils.copyProperties(savedVisitor, visitorDTO);
-			return visitorDTO;	
+			Admin savedAdmin=adminRepo.save(admin); 
+			AdminLoginDTO adminDTO=new AdminLoginDTO();
+			BeanUtils.copyProperties(savedAdmin, adminDTO);
+			return adminDTO;	
 		}catch(Exception ex) {
 			throw new ConflictException("Some error has occurred", ex);
 		}
@@ -151,16 +163,16 @@ public class AdminService {
     }*/
 
 	
-	public Visitor getVisitorByIdOrEmail(String cmpCd, String IdOrEmail) {
-		Optional<Visitor> visitor=visitorRepo.getVisitor(cmpCd, IdOrEmail);
-		return visitor.isPresent()?visitor.get():null;
+	public Admin getAdminByIdOrEmail(String cmpCd, String IdOrEmail) {
+		Optional<Admin> admin=adminRepo.getAdmin(cmpCd, IdOrEmail);
+		return admin.isPresent()?admin.get():null;
 	}	
 	
 	public VisitorLoginDTO changePassword(PasswordChangeReqDTO passwordChangeReq) {
 		System.out.println("cmpCd :"+passwordChangeReq.getCmpCd());
 		System.out.println("email: "+passwordChangeReq.getEmail());
 		System.out.println("newPassword: "+passwordChangeReq.getNewPassword());
-	    Visitor visitor = visitorRepo.findByCmpCdAndEmail(passwordChangeReq.getCmpCd(), passwordChangeReq.getEmail())
+	    Login visitor = visitorRepo.findByCmpCdAndEmail(passwordChangeReq.getCmpCd(), passwordChangeReq.getEmail())
 	            .orElseThrow(() -> new ResourceNotFoundException("User", "email", passwordChangeReq.getEmail()));
 	    System.out.println("vis email :"+visitor.getEmail());
 	    System.out.println("vis password: "+visitor.getPassword());
@@ -172,7 +184,7 @@ public class AdminService {
 	    visitor.setPassword(encodedPassword); 
 
 	    visitor.setPasswordUpdatedDate(LocalDateTime.now());
-	    Visitor savedVisitor = visitorRepo.save(visitor);
+	    Login savedVisitor = visitorRepo.save(visitor);
 	    VisitorLoginDTO newVisitorCred = new VisitorLoginDTO() ;
 
 	    newVisitorCred.setEmail(savedVisitor.getEmail());

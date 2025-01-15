@@ -1,48 +1,25 @@
 //package com.translineindia.vms.security;
 //
+//import java.util.ArrayList;
+//import java.util.Collection;
+//
+//import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.userdetails.UserDetails;
 //
-//public class AdminLogin implements UserDetails {
-//    private Admin admin;
+//import com.translineindia.vms.entity.AdminLogin;
 //
-//    public AdminLogin(Admin admin) {
-//        this.admin = admin;
-//    }
+//import lombok.Data;
 //
-//    // Implement UserDetails methods using admin properties
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        // Return roles/authorities for the admin
-//        return Collections.emptyList();
-//    }
+//@Data
+//public class AdminLogin implements UserDetails{	
+//	private String cmpCd;
+//	private String AdminId;
+//	private String name;
 //
-//    @Override
-//    public String getPassword() {
-//        return admin.getPassword();
-//    }
+//	private String email;
+//	private String password;
 //
-//    @Override
-//    public String getUsername() {
-//        return admin.getUsername();
-//    }
-//
-//    @Override
-//    public boolean isAccountNonExpired() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonLocked() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isCredentialsNonExpired() {
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isEnabled() {
-//        return admin.isEnabled();
-//    }
+//	
+//	
+//	
 //}

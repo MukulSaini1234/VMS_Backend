@@ -20,19 +20,19 @@ import lombok.Data;
 
 @Entity
 @Table(
-	name = "visitor_login",
-	uniqueConstraints = @UniqueConstraint(columnNames = {"cmp_cd","email"}, name = "UK_email")	
+	name = "user_login",
+	uniqueConstraints = @UniqueConstraint(columnNames = {"cmp_cd","email"}, name = "UK_email")
 )
 @Data
-@IdClass(VisitorId.class)
-public class Visitor {	
+@IdClass(LoginId.class)
+public class Login {	
 	@Id
 	@Column(name = "cmp_cd")	
 	private String cmpCd;
 	
 	@Id
-	@Column(name = "visitor_id")	
-	private String visitorId;
+	@Column(name = "user_id")	
+	private String userId;
 	
 	@Column(name = "phone_no")
 	private Long phoneNo;
@@ -49,8 +49,8 @@ public class Visitor {
 	@Column(length = 500 , name="address")
 	private String address;
 	
-	@Column(length = 200, name="vis_cmp_name")
-	private String VisitorCmpName;	
+	@Column(length = 200, name="ref_cmp_name")
+	private String refCmpName;	
 		
 	@Column(length = 100,nullable = false)
 	private String password;

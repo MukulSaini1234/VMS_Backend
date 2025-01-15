@@ -8,20 +8,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.translineindia.vms.entity.Visitor;
-import com.translineindia.vms.entity.VisitorId;
+import com.translineindia.vms.entity.Login;
+import com.translineindia.vms.entity.LoginId;
 
 @Repository
-public interface VisitorRepository extends JpaRepository<Visitor,VisitorId>{
+public interface LoginRepository extends JpaRepository<Login,LoginId>{
 	
 //	public List<Visitor> findByName(String name);
 	
-	public Optional<Visitor> findByCmpCdAndEmail(String cmpCd, String email);
+	public Optional<Login> findByCmpCdAndEmail(String cmpCd, String email);
 
 	
 //	public List<Visitor> findByNameContains(String name); 
 	
-	@Query("SELECT MAX(SUBSTRING(u.visitorId, 3)) FROM Visitor u WHERE u.visitorId LIKE 'VS%'")
+	@Query("SELECT MAX(SUBSTRING(u.userId, 3)) FROM Login u WHERE u.userId LIKE 'VS%'")
     String findMaxSerialNumber();
 	
 
@@ -31,13 +31,13 @@ public interface VisitorRepository extends JpaRepository<Visitor,VisitorId>{
 	//@Query(name="SELECT * FROM GetOfficesList(?1, ?2)",nativeQuery = true)
     //List<Object[]> getOfficesList(String  cmpCd,String offCd);
     
-    @Query("SELECT MAX(v.visitorId) FROM Visitor v WHERE v.cmpCd=:cmpCd")
+    @Query("SELECT MAX(v.userId) FROM Login v WHERE v.cmpCd=:cmpCd")
     Optional<String> getMaxVisitorId(String cmpCd);
     
-    public Visitor findByCmpCdAndFirstName(String cmpCd,String name);
+    public Login findByCmpCdAndFirstName(String cmpCd,String name);
     
-    @Query("SELECT v FROM Visitor v WHERE v.cmpCd=:cmpCd AND (v.email=:visitorId OR v.visitorId=:visitorId)")
-    public Optional<Visitor> getVisitor(@Param("cmpCd") String cmpCd, @Param("visitorId") String visitorIdOrEmail);
+    @Query("SELECT v FROM Login v WHERE v.cmpCd=:cmpCd AND (v.email=:userId OR v.userId=:userId)")
+    public Optional<Login> getVisitor(@Param("cmpCd") String cmpCd, @Param("userId") String visitorIdOrEmail);
         /*
          * findBy=queryBy=readBy
          * existsBy 

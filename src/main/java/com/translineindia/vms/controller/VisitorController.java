@@ -19,8 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -43,16 +45,16 @@ import com.transline.vms.utils.ShortUniqueIdGenerator;
 import com.translineindia.vms.config.AuthUtils;
 import com.translineindia.vms.dtos.AppointmentDTO;
 import com.translineindia.vms.dtos.PasswordChangeReqDTO;
-import com.translineindia.vms.dtos.VisitorDTO;
+import com.translineindia.vms.dtos.LoginDTO;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.dtos.VisitorRequestDtlsDTO;
 import com.translineindia.vms.dtos.VisitorRequestMstDTO;
 import com.translineindia.vms.entity.AppointmentEntity;
 import com.translineindia.vms.entity.VisitorRequestMst;
 import com.translineindia.vms.security.JwtHelper;
-import com.translineindia.vms.security.VisitorLogin;
+import com.translineindia.vms.security.UserPrincipal;
 import com.translineindia.vms.service.AppointmentService;
-import com.translineindia.vms.service.VisitorService;
+import com.translineindia.vms.service.UserService;
 
 import jakarta.persistence.criteria.Path;
 import jakarta.validation.Valid;
@@ -64,7 +66,7 @@ import jakarta.servlet.ServletContext;
 public class VisitorController {
 	
 	@Autowired
-	private VisitorService visitorService;
+	private UserService visitorService;
 	
 	@Autowired
 	private RestTemplate restTemplate;
@@ -75,13 +77,7 @@ public class VisitorController {
 	 
     @Autowired
 	private AppointmentService appointmentService;
-  
-    @GetMapping("/visitor-details")
-	public ResponseEntity<VisitorDTO> getVisitorDetails(){    	
-    	VisitorDTO visitorDTO=new VisitorDTO();
-    	BeanUtils.copyProperties(AuthUtils.getCurrentVisitor(), visitorDTO);
-		return ResponseEntity.ok(visitorDTO);
-	}
+   
    
 //	@PostMapping(path="/appointment",consumes = MediaType.APPLICATION_JSON_VALUE)
 //	public ResponseEntity<String> Appointment(@Valid @RequestBody AppointmentDTO dto) throws IOException{
@@ -118,22 +114,6 @@ public class VisitorController {
         return "It Works";
     }
 	
-    
-    @PutMapping("/changePassword")
-    public ResponseEntity<VisitorLoginDTO> changePassword(
-                            @RequestBody PasswordChangeReqDTO passwordChangeRequest) {
-        try {
-//        	String cmpCd=AuthUtils.getCurrentUser().getCmpCd();
-//            LoginDTO updatedUser = loginServiceImpl.changePassword(cmpCd,email, passwordChangeRequest.getNewPassword());
-        	System.out.println("email :"+passwordChangeRequest.getEmail());
-        	System.out.println(passwordChangeRequest.getCmpCd());
-        	System.out.println(passwordChangeRequest.getNewPassword());
-        	VisitorLoginDTO visLoginDTO = visitorService.changePassword(passwordChangeRequest);
-            return ResponseEntity.ok(visLoginDTO);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
 	
     // New api added on 07-01-24
     @PostMapping(value ="/request" , consumes = "multipart/form-data") // working now on 8Th 
@@ -147,9 +127,28 @@ public class VisitorController {
     	
     }
     
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @GetMapping("getAllRequests")
+    public ResponseEntity<List<VisitorRequestMst>> getRequests(@RequestParam String cmpCd){
+    	System.out.println("cmpCd: "+cmpCd);
+    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    	System.out.println("autheication "+authentication);
+    	System.out.println("Authentication role: "+authentication.getPrincipal());
+    
+    	List<VisitorRequestMst> vsm = appointmentService.getAllVisitorRequest(cmpCd);
+    	System.out.println("vsm: "+vsm);
+    	return ResponseEntity.status(HttpStatus.OK).body(vsm);
+    	
+    }
+    
+    
+    
     // Get API ADDED on 08-01-25
+//    @PreAuthorize("hasRole('VISITOR')")
     @GetMapping("getAppointmentRequests")
     public ResponseEntity<List<VisitorRequestMst>> getVisitorRequests(@RequestParam String cmpCd, String visitorId) {
+    	 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+         System.out.println(authentication.getCredentials());
     	List<VisitorRequestMst> req = appointmentService.getVisitorDetailsByVisitorId(visitorId);
     	return ResponseEntity.status(HttpStatus.OK).body(req);
     }
@@ -162,5 +161,11 @@ public class VisitorController {
         return appointmentService.updateVehicleDetails(updatedVisitorRequest);
     }
     
-       
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public VisitorRequestMstDTO getRequests(@RequestParam String cmpCd, String offCd) {
+//    	System.out.println("");
+//    	
+//    }
+
+    
 }

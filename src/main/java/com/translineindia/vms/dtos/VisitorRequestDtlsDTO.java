@@ -40,5 +40,5 @@ public class VisitorRequestDtlsDTO {
 //    private String idProofFile;
     
     private MultipartFile idProofFile;
-    private Long visitorMstId; // Reference to `VisitorRequestMst`
+    private Long visitorMstId; // Reference to `VisitorRequestMst` 
 }

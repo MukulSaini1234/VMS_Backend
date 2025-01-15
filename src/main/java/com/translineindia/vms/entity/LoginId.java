@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VisitorId implements Serializable{	
+public class LoginId implements Serializable{	
 	private String cmpCd;
 		
-	private String visitorId;
+	private String userId;
 }
