@@ -7,7 +7,7 @@ import com.translineindia.vms.entity.Login;
 import com.translineindia.vms.security.UserPrincipal;
 
 public class AuthUtils {
-	public static Login getCurrentVisitor() {
+	public static Login getCurrentUser() {
 		return ((UserPrincipal)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getLogin();
 	}
 }

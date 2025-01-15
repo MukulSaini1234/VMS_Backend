@@ -127,21 +127,22 @@ public class VisitorController {
     	
     }
     
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+
+//	  @PreAuthorize("hasRole('ADMIN')")
+   //@PreAuthorize("hasAuthority('ROLE_VISITOR')")
+    @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("getAllRequests")
-    public ResponseEntity<List<VisitorRequestMst>> getRequests(@RequestParam String cmpCd){
-    	System.out.println("cmpCd: "+cmpCd);
-    	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    	System.out.println("autheication "+authentication);
-    	System.out.println("Authentication role: "+authentication.getPrincipal());
-    
-    	List<VisitorRequestMst> vsm = appointmentService.getAllVisitorRequest(cmpCd);
-    	System.out.println("vsm: "+vsm);
-    	return ResponseEntity.status(HttpStatus.OK).body(vsm);
-    	
-    }
-    
-    
+  public ResponseEntity<List<VisitorRequestMst>> getRequests(@RequestParam String cmpCd){
+  	System.out.println("cmpCd: "+cmpCd);
+  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+  	System.out.println("autheication "+authentication);
+  	System.out.println("Authentication role: "+authentication.getPrincipal());
+  
+  	List<VisitorRequestMst> vsm = appointmentService.getAllVisitorRequest(cmpCd);
+  	System.out.println("vsm: "+vsm);
+  	return ResponseEntity.status(HttpStatus.OK).body(vsm);
+  	
+  }
     
     // Get API ADDED on 08-01-25
 //    @PreAuthorize("hasRole('VISITOR')")
@@ -166,6 +167,16 @@ public class VisitorController {
 //    	System.out.println("");
 //    	
 //    }
+    
+    // Added on 15-01-25
+	 // Get Api to change the status of visit request
+	 @PatchMapping("updateReqStatus")
+	    public VisitorRequestMstDTO updateReqStatus(
+	                                                  @RequestBody VisitorRequestMstDTO updatedVisitorRequest) {
+//	    	System.out.print("id ;"+id);
+	    	System.out.print("vis dt:"+updatedVisitorRequest);
+	        return appointmentService.updateReqStatus(updatedVisitorRequest);
+	    }
 
     
 }

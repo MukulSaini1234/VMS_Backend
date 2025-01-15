@@ -28,7 +28,17 @@ public class UserPrincipal implements UserDetails{
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		return List.of(new SimpleGrantedAuthority(login.getRole().toUpperCase()));
+		List<SimpleGrantedAuthority> roles=new ArrayList();
+		if(login.getRole().equalsIgnoreCase("ADMIN")) {
+			roles.add(new SimpleGrantedAuthority("ROLE_ADMIN"));			
+			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+		}else if(login.getRole().equalsIgnoreCase("VISITOR")) {
+			roles.add(new SimpleGrantedAuthority("ROLE_VISITOR"));
+			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
+		}else {
+			roles.add(new SimpleGrantedAuthority("ROLE_"+login.getRole().toUpperCase()));
+		}
+		return roles;
 	}
 
 	@Override

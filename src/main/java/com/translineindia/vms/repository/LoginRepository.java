@@ -37,7 +37,7 @@ public interface LoginRepository extends JpaRepository<Login,LoginId>{
     public Login findByCmpCdAndFirstName(String cmpCd,String name);
     
     @Query("SELECT v FROM Login v WHERE v.cmpCd=:cmpCd AND (v.email=:userId OR v.userId=:userId)")
-    public Optional<Login> getVisitor(@Param("cmpCd") String cmpCd, @Param("userId") String visitorIdOrEmail);
+    public Optional<Login> getUser(@Param("cmpCd") String cmpCd, @Param("userId") String visitorIdOrEmail);
         /*
          * findBy=queryBy=readBy
          * existsBy 

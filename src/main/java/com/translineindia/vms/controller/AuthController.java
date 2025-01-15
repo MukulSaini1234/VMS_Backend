@@ -69,7 +69,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<JwtResponse> loginVisitor(@Valid @RequestBody JwtRequest jwtRequest) {		 	
 		//validate if user exists or not		
-		Login visitor = userService.getVisitorByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());		
+		Login visitor = userService.getUserByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 if(visitor!=null && passwordEncoder.matches(jwtRequest.getUserPw(), visitor.getPassword())) {
 			 	String userNameToken = jwtRequest.getCmpCd()+ "::" +jwtRequest.getUserId();
@@ -116,17 +116,5 @@ public class AuthController {
 		
 		LoginDTO loginDTO = userService.createUser(dto);	 
 		return ResponseEntity.status(HttpStatus.CREATED).body(loginDTO);
-	 }
-	
-	 @GetMapping("/visitor-details")
-	   	public ResponseEntity<LoginDTO> getVisitorDetails(){    	
-	       	LoginDTO visitorDTO=new LoginDTO();
-	       	BeanUtils.copyProperties(AuthUtils.getCurrentVisitor(), visitorDTO);
-	       	System.out.println("return DTO:"+visitorDTO);
-	   		return ResponseEntity.ok(visitorDTO);
-	   	}
-		
-    
-    
-	
+	 }	
 }

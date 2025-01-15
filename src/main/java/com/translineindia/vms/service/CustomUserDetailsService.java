@@ -40,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		   System.out.println("id :"+idOrEmail);
 		   
 		   
-		   Login login=userService.getVisitorByIdOrEmail(cmpCd, idOrEmail);
+		   Login login=userService.getUserByIdOrEmail(cmpCd, idOrEmail);
 		   if(login!=null) {
 			   return new UserPrincipal(login);
 		   }else {

@@ -14,15 +14,17 @@ import org.springframework.stereotype.Service;
 import com.translineindia.vms.dtos.AppointmentDTO;
 import com.translineindia.vms.dtos.LoginDTO;
 import com.translineindia.vms.dtos.NewLoginDTO;
+import com.translineindia.vms.dtos.OfficeDTO;
 import com.translineindia.vms.dtos.PasswordChangeReqDTO;
 //import com.example.demo.excep.ResourceNotFoundException;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.entity.AppointmentEntity;
 import com.translineindia.vms.entity.Login;
 import com.translineindia.vms.entity.LoginId;
+import com.translineindia.vms.entity.OffMst;
 import com.translineindia.vms.repository.AppointmentRepo;
 import com.translineindia.vms.repository.LoginRepository;
-
+import com.translineindia.vms.repository.OffRepo;
 import com.translineindia.vms.exception.*;
 
 @Service
@@ -33,6 +35,9 @@ public class UserService {
 	
 	@Autowired
 	private AppointmentRepo appointmentRepo;
+	
+	@Autowired
+	private OffRepo offRepo;
 		
 	private PasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
 
@@ -134,8 +139,8 @@ public class UserService {
         return "VS" + String.format("%04d", newSerial); // Pad with leading zeros if needed
     }
 	
-	public Login getVisitorByIdOrEmail(String cmpCd, String IdOrEmail) {
-		Optional<Login> visitor=loginRepo.getVisitor(cmpCd, IdOrEmail);
+	public Login getUserByIdOrEmail(String cmpCd, String IdOrEmail) {
+		Optional<Login> visitor=loginRepo.getUser(cmpCd, IdOrEmail);
 		return visitor.isPresent()?visitor.get():null;
 	}	
 	
@@ -163,6 +168,10 @@ public class UserService {
 	    return updatedUser;
 	}
 	
-	
+	public List<OffMst> getOfficesList(String cmpCd){
+		List<OffMst> offList = offRepo.findByCmpCd(cmpCd);
+
+		return offList;
+	}
 	
 }

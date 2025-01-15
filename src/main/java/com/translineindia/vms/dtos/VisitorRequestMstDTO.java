@@ -48,4 +48,6 @@ public class VisitorRequestMstDTO {
     @NotNull
     @NotEmpty
     private String cmpCd;
+    private String reqStatus; // added on 15-01-25
+    private String statusRemarks;// added on 15-01-25
 }

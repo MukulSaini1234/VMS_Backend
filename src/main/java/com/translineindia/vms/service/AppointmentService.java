@@ -243,6 +243,9 @@ public class AppointmentService {
 		 List<VisitorRequestMst> resp = repo.findByVisitorId(visitorId);
 		 VisitorRequestMstDTO visitReq = new VisitorRequestMstDTO();
 		 return resp;
+	 
+		 
+    
 		 
 //		 List<VisitorRequestMstDTO> dtos = resp.stream()
 //				    .map(entity -> {
@@ -355,6 +358,26 @@ public class AppointmentService {
 //            System.out.println("vis details :"+masterDTO);  
 //	        return masterDTO;
 	    }
+	 
+	 
+	// Following code added on 15-01-25
+			 public VisitorRequestMstDTO updateReqStatus(VisitorRequestMstDTO updatedVisitorRequest) {
+			        // Retrieve the existing request by ID
+			        VisitorRequestMst existingRequest = repo.findById(updatedVisitorRequest.getId())
+			                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + updatedVisitorRequest.getId()));
+
+			        // Update the vehicle details
+//			        existingRequest.setVehicleNo(updatedVisitorRequest.getVehicleNo());
+			        existingRequest.setReqStatus(updatedVisitorRequest.getReqStatus());
+			        existingRequest.setStatusRemarks(updatedVisitorRequest.getStatusRemarks());
+			       
+
+			        VisitorRequestMst savedDtls=repo.save(existingRequest);
+					VisitorRequestMstDTO masterDTO=new VisitorRequestMstDTO();
+					BeanUtils.copyProperties(savedDtls, masterDTO);
+					return masterDTO;	
+			    } 
+	 
 	 
 	 public boolean saveFile(MultipartFile file, String uploadDir) {
 		    System.out.println("file: " + file);

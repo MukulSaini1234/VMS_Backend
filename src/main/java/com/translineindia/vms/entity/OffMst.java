@@ -14,17 +14,17 @@ import lombok.Data;
 public class OffMst {
 
 	@Id
-	@Column(name = "CMP_Cd", length=10)
+	@Column(name = "cmp_cd", length=10)
 	private String cmpCd;
 	
 	@Id
-	@Column(name = "OFF_CD", length = 10)
+	@Column(name = "off_cd", length = 10)
 	private String offCd;
 	
-	@Column(name = "OFF_NAME", length = 255)
+	@Column(name = "off_name", length = 255)
 	private String offName;
 	
-	@Column(name = "OFF_TYPE", length = 10)
+	@Column(name = "off_type", length = 10)
 	private String offtype;
 	
 	@Column(name = "CTL_CD", length = 10)

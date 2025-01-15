@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -38,8 +39,11 @@ import com.translineindia.vms.service.UserService;
 
 @Configuration
 @EnableWebSecurity
-
-
+@EnableMethodSecurity(
+	prePostEnabled = true,//@PreAutorize,@PostAutorize,
+	jsr250Enabled = true,//@RolesAllowed
+	securedEnabled = true//@Secured
+)
 public class SecurityConfig {
 		
 	@Autowired
@@ -56,8 +60,7 @@ public class SecurityConfig {
     	SecurityFilterChain filterChain= http
             .csrf(csrf->csrf.disable()) // Disable CSRF for stateless APIs            
             .authorizeHttpRequests(auth -> auth        		
-                .requestMatchers("/auth/**","/public/**").permitAll() // Allow public access to authentication endpoints   
-                .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers("/auth/**","/public/**").permitAll() // Allow public access to authentication endpoints                   
                 .anyRequest().authenticated() // Secure all other endpoints                                
             )  
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions

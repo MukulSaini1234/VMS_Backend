@@ -63,6 +63,11 @@ public class VisitorRequestMst {
 	private List<VisitorRequestDtls> visitorDtls;
 	private String cmpCd;
 	
+	// added on 15-01-25
+	private String reqStatus;
+	//added on 15-01-25
+	private String statusRemarks;
+	
 	@Override
 	public String toString() {
 	    return null;
