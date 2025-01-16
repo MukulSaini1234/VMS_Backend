@@ -361,22 +361,29 @@ public class AppointmentService {
 	 
 	 
 	// Following code added on 15-01-25
-			 public VisitorRequestMstDTO updateReqStatus(VisitorRequestMstDTO updatedVisitorRequest) {
-			        // Retrieve the existing request by ID
-			        VisitorRequestMst existingRequest = repo.findById(updatedVisitorRequest.getId())
-			                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + updatedVisitorRequest.getId()));
+	 public String updateReqStatus(VisitorRequestMstDTO updatedVisitorRequest) {
+		    try {
+		        // Retrieve the existing request by ID
+		        VisitorRequestMst existingRequest = repo.findById(updatedVisitorRequest.getId())
+		                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + updatedVisitorRequest.getId()));
 
-			        // Update the vehicle details
-//			        existingRequest.setVehicleNo(updatedVisitorRequest.getVehicleNo());
-			        existingRequest.setReqStatus(updatedVisitorRequest.getReqStatus());
-			        existingRequest.setStatusRemarks(updatedVisitorRequest.getStatusRemarks());
-			       
+		        // Update the necessary fields
+		        existingRequest.setReqStatus(updatedVisitorRequest.getReqStatus());
+		        existingRequest.setStatusRemarks(updatedVisitorRequest.getStatusRemarks());
 
-			        VisitorRequestMst savedDtls=repo.save(existingRequest);
-					VisitorRequestMstDTO masterDTO=new VisitorRequestMstDTO();
-					BeanUtils.copyProperties(savedDtls, masterDTO);
-					return masterDTO;	
-			    } 
+		        // Save the updated entity
+		        repo.save(existingRequest);
+
+		        // Return the updated status
+		        return updatedVisitorRequest.getReqStatus();
+		    } catch (RuntimeException ex) {
+		        throw ex; // Let the controller handle runtime exceptions
+		    } catch (Exception ex) {
+		        throw new RuntimeException("Failed to update request status: " + ex.getMessage());
+		    }
+		}
+
+
 	 
 	 
 	 public boolean saveFile(MultipartFile file, String uploadDir) {

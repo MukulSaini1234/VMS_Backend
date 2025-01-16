@@ -40,7 +40,7 @@ import com.translineindia.vms.service.UserService;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(
-	prePostEnabled = true,//@PreAutorize,@PostAutorize,
+	prePostEnabled = true,//@PreAuthorize,@PostAuthorize,
 	jsr250Enabled = true,//@RolesAllowed
 	securedEnabled = true//@Secured
 )

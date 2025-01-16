@@ -59,7 +59,7 @@ import com.translineindia.vms.service.UserService;
 import jakarta.persistence.criteria.Path;
 import jakarta.validation.Valid;
 import jakarta.servlet.ServletContext;
-
+import com.transline.vms.utils.ApiResponse;
 @RestController
 @RequestMapping("/api/visitors")
 @CrossOrigin(origins = "*",allowedHeaders = "*", allowCredentials = "false")
@@ -119,64 +119,80 @@ public class VisitorController {
     @PostMapping(value ="/request" , consumes = "multipart/form-data") // working now on 8Th 
     public VisitorRequestMstDTO createVisitorRequest(@ModelAttribute @Valid VisitorRequestMstDTO request) {
     	System.out.println("request :"+request);
-    	
-    	
-    	VisitorRequestMstDTO res = appointmentService.createVisitorRequest(request);
+        VisitorRequestMstDTO res = appointmentService.createVisitorRequest(request);
 //        return ResponseEntity.ok("Appointment request saved successfully.");
     	return res;
-    	
     }
     
 
-//	  @PreAuthorize("hasRole('ADMIN')")
-   //@PreAuthorize("hasAuthority('ROLE_VISITOR')")
-    @PreAuthorize("hasRole('ADMIN')")
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("getAllRequests")
-  public ResponseEntity<List<VisitorRequestMst>> getRequests(@RequestParam String cmpCd){
-  	System.out.println("cmpCd: "+cmpCd);
-  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-  	System.out.println("autheication "+authentication);
-  	System.out.println("Authentication role: "+authentication.getPrincipal());
-  
-  	List<VisitorRequestMst> vsm = appointmentService.getAllVisitorRequest(cmpCd);
-  	System.out.println("vsm: "+vsm);
-  	return ResponseEntity.status(HttpStatus.OK).body(vsm);
+  public ResponseEntity<Optional<List<VisitorRequestMst>>> getRequests(@RequestParam String cmpCd){
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+  	Optional<List<VisitorRequestMst>> vsm = Optional.ofNullable(appointmentService.getAllVisitorRequest(cmpCd));
+  	if(vsm.isPresent() && !vsm.isEmpty()) {
+  		return  ResponseEntity.status(HttpStatus.OK).body(vsm);
+  	}
+  	else {
+  		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  	}
   	
   }
     
     // Get API ADDED on 08-01-25
 //    @PreAuthorize("hasRole('VISITOR')")
     @GetMapping("getAppointmentRequests")
-    public ResponseEntity<List<VisitorRequestMst>> getVisitorRequests(@RequestParam String cmpCd, String visitorId) {
+    public ResponseEntity<?> getVisitorRequests(@RequestParam String cmpCd, String visitorId) {
     	 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
          System.out.println(authentication.getCredentials());
-    	List<VisitorRequestMst> req = appointmentService.getVisitorDetailsByVisitorId(visitorId);
-    	return ResponseEntity.status(HttpStatus.OK).body(req);
-    }
-    // Put api added on 08-01-25
-    @PatchMapping("update-vehicle")
-    public VisitorRequestMstDTO updateVehicleDetails(
-                                                  @RequestBody VisitorRequestMstDTO updatedVisitorRequest) {
-//    	System.out.print("id ;"+id);
-    	System.out.print("vis dt:"+updatedVisitorRequest);
-        return appointmentService.updateVehicleDetails(updatedVisitorRequest);
+         Optional<List<VisitorRequestMst>> req = 
+        	        Optional.ofNullable(appointmentService.getVisitorDetailsByVisitorId(visitorId)); 
+               if (req.isPresent() && !req.get().isEmpty()) {
+        	        return ResponseEntity.status(HttpStatus.OK).body(req.get());
+        	    } else {
+        	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No requests found for this user");
+        	    }
     }
     
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public VisitorRequestMstDTO getRequests(@RequestParam String cmpCd, String offCd) {
-//    	System.out.println("");
-//    	
-//    }
+    
+    // Put api added on 08-01-25
+    @PutMapping("/update-vehicle")
+    public ResponseEntity<ApiResponse> updateVehicleDetails(
+            @RequestBody VisitorRequestMstDTO updatedVisitorRequest) {
+        try {
+            VisitorRequestMstDTO mstDTO = appointmentService.updateVehicleDetails(updatedVisitorRequest);
+            ApiResponse response = new ApiResponse("Vehicle details updated successfully", true);
+            return ResponseEntity.ok(response);
+        } catch (Exception ex) {
+            ApiResponse response = new ApiResponse("Failed to update vehicle details: " + ex.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+
     
     // Added on 15-01-25
 	 // Get Api to change the status of visit request
-	 @PatchMapping("updateReqStatus")
-	    public VisitorRequestMstDTO updateReqStatus(
-	                                                  @RequestBody VisitorRequestMstDTO updatedVisitorRequest) {
-//	    	System.out.print("id ;"+id);
-	    	System.out.print("vis dt:"+updatedVisitorRequest);
-	        return appointmentService.updateReqStatus(updatedVisitorRequest);
-	    }
-
+    @PutMapping("updateReqStatus")
+    public ResponseEntity<ApiResponse> updateReqStatus(@RequestBody VisitorRequestMstDTO updatedVisitorRequest) {
+        try {
+            String status = appointmentService.updateReqStatus(updatedVisitorRequest);
+            if(status.equalsIgnoreCase("A")) {
+            	status = "Approved";
+            }
+            else {
+            	status = "Denied"; 
+            } 
+//            return ResponseEntity.ok("Request " + status);
+            return new ResponseEntity<ApiResponse>(new ApiResponse("Request "+status,true), HttpStatus.OK);
+//            return new ResponseEntity<ApiResponse>(new ApiResponse("Request :"+status, true), HttpStatus.OK);
+        } catch (RuntimeException ex) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: " + ex.getMessage());
+        	  return new ResponseEntity<ApiResponse>(new ApiResponse("Error:  "+ex.getMessage(),false), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + ex.getMessage());
+        	  return new ResponseEntity<ApiResponse>(new ApiResponse("An Unexpected error occurred "+ex.getMessage(),true), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
 }

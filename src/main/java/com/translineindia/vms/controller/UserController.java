@@ -89,9 +89,12 @@ public class UserController {
 	 // added on 15-01-25
 	 @RolesAllowed({"USER","ADMIN"})
 	 @GetMapping("getAllOffices")
-	 public ResponseEntity<List<OffMst>> getOfficeList(String cmpCd){
+	 public ResponseEntity<?> getOfficeList(String cmpCd){
 		 List<OffMst> offList = userService.getOfficesList(cmpCd);
-		 return ResponseEntity.ok(offList);
+		 if(!offList.isEmpty()) {
+			 return ResponseEntity.ok(offList);
+		 }
+		 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Offices to show");
 	 }
 	 
 	
