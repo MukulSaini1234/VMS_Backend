@@ -26,6 +26,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -117,7 +118,7 @@ public class VisitorController {
 	
     // New api added on 07-01-24
     @PostMapping(value ="/request" , consumes = "multipart/form-data") // working now on 8Th 
-    public VisitorRequestMstDTO createVisitorRequest(@ModelAttribute @Valid VisitorRequestMstDTO request) {
+    public VisitorRequestMstDTO createVisitorRequest(@ModelAttribute @Valid VisitorRequestMstDTO request, BindingResult result) {
     	System.out.println("request :"+request);
         VisitorRequestMstDTO res = appointmentService.createVisitorRequest(request);
 //        return ResponseEntity.ok("Appointment request saved successfully.");
@@ -134,10 +135,38 @@ public class VisitorController {
   		return  ResponseEntity.status(HttpStatus.OK).body(vsm);
   	}
   	else {
-  		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   	}
   	
   }
+  
+  // Added on 17-01-25
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("getAcceptedRequests")
+  public ResponseEntity<Optional<List<VisitorRequestMst>>> getAcceptedReq(@RequestParam String cmpCd){
+	  Optional<List<VisitorRequestMst>> vsm = Optional.ofNullable(appointmentService.getRequestsByStatus(cmpCd,"A"));
+	  if(vsm.isPresent() && !vsm.isEmpty()) {
+		  return ResponseEntity.status(HttpStatus.OK).body(vsm);
+	  }
+	  else {
+		  return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	  }
+  }
+  
+  
+//Added on 17-01-25
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("getRejectedRequests")
+ public ResponseEntity<Optional<List<VisitorRequestMst>>> getRejectedReq(@RequestParam String cmpCd){
+	  Optional<List<VisitorRequestMst>> vsm = Optional.ofNullable(appointmentService.getRequestsByStatus(cmpCd,"D"));
+	  if(vsm.isPresent() && !vsm.isEmpty()) {
+		  return ResponseEntity.status(HttpStatus.OK).body(vsm);
+	  }
+	  else {
+		  return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	  }
+ }
+ 
     
     // Get API ADDED on 08-01-25
 //    @PreAuthorize("hasRole('VISITOR')")

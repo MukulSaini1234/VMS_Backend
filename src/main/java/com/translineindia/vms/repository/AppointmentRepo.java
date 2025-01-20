@@ -43,5 +43,10 @@ public interface AppointmentRepo extends JpaRepository<VisitorRequestMst ,Long>{
         // Added on 14-01-25
 		    @Query(value = "SELECT * FROM vis_req_mst v WHERE v.cmp_cd = :cmpCd", nativeQuery = true)
 		    public List<VisitorRequestMst> findByCmpCd(String cmpCd);
+		    
+		// Added on 17-01-25
+		    @Query(value = "SELECT * FROM vis_req_mst v WHERE v.cmp_cd = :cmpCd AND v.req_status = :reqStatus", nativeQuery = true)
+		    public List<VisitorRequestMst> getRequestsByStatus(String cmpCd, String reqStatus);
+
 	
 }

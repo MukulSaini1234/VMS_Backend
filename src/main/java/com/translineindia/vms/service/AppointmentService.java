@@ -150,64 +150,138 @@ public class AppointmentService {
 	
 	
 //	 Following code added on 07-01-25 //working now on 8th
+//	 public VisitorRequestMstDTO createVisitorRequest(VisitorRequestMstDTO visitorRequestMstDTO) {
+//	        // Map DTO to Entity for VisitorRequestMst
+//	        VisitorRequestMst visitorRequestMst = new VisitorRequestMst();
+//	        VisitorRequestMstDTO mstData= new VisitorRequestMstDTO();
+//	        visitorRequestMst.setEmpId(visitorRequestMstDTO.getEmpId());
+//	        visitorRequestMst.setEmpName(visitorRequestMstDTO.getEmpName());
+//	        visitorRequestMst.setVisOrganization(visitorRequestMstDTO.getVisOrganization());
+//	        visitorRequestMst.setPurpose(visitorRequestMstDTO.getPurpose());
+//	        visitorRequestMst.setFromDate(visitorRequestMstDTO.getFromDate());
+//	        visitorRequestMst.setToDate(visitorRequestMstDTO.getToDate());
+//	        visitorRequestMst.setVisitorAddress(visitorRequestMstDTO.getVisitorAddress());
+//	        visitorRequestMst.setHasVehicle(visitorRequestMstDTO.getHasVehicle());
+//	        visitorRequestMst.setVisitorId(visitorRequestMstDTO.getVisitorId());
+//	        visitorRequestMst.setVehicleNo(visitorRequestMstDTO.getVehicleNo());
+//	        visitorRequestMst.setDriverName(visitorRequestMstDTO.getDriverName());
+//	        visitorRequestMst.setVehicleType(visitorRequestMstDTO.getVehicleType());
+//	        visitorRequestMst.setDriverDlNo(visitorRequestMstDTO.getDriverDlNo());
+//	        visitorRequestMst.setDriverDlUpto(visitorRequestMstDTO.getDriverDlUpto());
+//	        visitorRequestMst.setEmpEmail(visitorRequestMstDTO.getEmpEmail());
+//	        
+//	        // Save VisitorRequestMst to get the generated ID
+//	        visitorRequestMst = repo.save(visitorRequestMst);
+//
+////	         Map each VisitorDetailsDTO to VisitorRequestDtls and associate with the saved VisitorRequestMst
+//	        List<VisitorRequestDtlsDTO> visitorDtlsList = visitorRequestMstDTO.getVisitorDtls();
+//	        System.out.println("vis detials :"+visitorDtlsList);
+//	        for (VisitorRequestDtlsDTO visitorRequestDtlsDTO : visitorDtlsList) {
+//	            VisitorRequestDtls visitorRequestDtls = new VisitorRequestDtls();
+//	            visitorRequestDtls.setName(visitorRequestDtlsDTO.getName());
+//	            visitorRequestDtls.setIdProof(visitorRequestDtlsDTO.getIdProof());
+//	            visitorRequestDtls.setIdProofNo(visitorRequestDtlsDTO.getIdproofNo());
+//	            visitorRequestDtls.setContactNo(visitorRequestDtlsDTO.getContactNo());
+//	            visitorRequestDtls.setAccessories(visitorRequestDtlsDTO.getAccessories());
+//	            visitorRequestDtls.setDob(visitorRequestDtlsDTO.getDob());
+////	            Map<String,MultipartFile> files = new HashMap();
+////	            List<MultipartFile> idProofAndPhoto = new ArrayList();
+////	            idProofAndPhoto.add(visitorRequestDtlsDTO.getIdProofFile());
+////	            idProofAndPhoto.add(visitorRequestDtlsDTO.getPhoto());
+////	            files.put("idProod", visitorRequestDtlsDTO.getIdProofFile());
+////	            files.put("photo", visitorRequestDtlsDTO.getPhoto());
+////	            String fileStat = saveFile(visitorRequestDtlsDTO.getIdProofFile());0
+//	           
+//	            visitorRequestDtls.setPhoto(visitorRequestDtlsDTO.getPhoto());
+//	            boolean FileUploadStatus = saveFile(visitorRequestDtlsDTO.getIdProofFile(),uploadDir); 
+//	            System.out.println("fileStat :"+ FileUploadStatus);
+//
+//	            // Set the foreign key relationship
+//	            visitorRequestDtls.setVisitorRequestMst(visitorRequestMst); // Set the parent object
+//	            
+//	            // Save the VisitorRequestDtls entity
+//	            VisitorRequestDtls savedData= dtlsRepo.save(visitorRequestDtls);
+//	           
+//	            BeanUtils.copyProperties(visitorRequestMst, visitorDtlsList);
+//	            BeanUtils.copyProperties(visitorDtlsList,mstData);
+//	            
+//	        }
+//	        
+//	        return mstData;
+//	    }
+//	
+	 
+	 
+	 
 	 public VisitorRequestMstDTO createVisitorRequest(VisitorRequestMstDTO visitorRequestMstDTO) {
-	        // Map DTO to Entity for VisitorRequestMst
-	        VisitorRequestMst visitorRequestMst = new VisitorRequestMst();
-	        VisitorRequestMstDTO mstData= new VisitorRequestMstDTO();
-	        visitorRequestMst.setEmpId(visitorRequestMstDTO.getEmpId());
-	        visitorRequestMst.setEmpName(visitorRequestMstDTO.getEmpName());
-	        visitorRequestMst.setVisOrganization(visitorRequestMstDTO.getVisOrganization());
-	        visitorRequestMst.setPurpose(visitorRequestMstDTO.getPurpose());
-	        visitorRequestMst.setFromDate(visitorRequestMstDTO.getFromDate());
-	        visitorRequestMst.setToDate(visitorRequestMstDTO.getToDate());
-	        visitorRequestMst.setVisitorAddress(visitorRequestMstDTO.getVisitorAddress());
-	        visitorRequestMst.setHasVehicle(visitorRequestMstDTO.getHasVehicle());
-	        visitorRequestMst.setVisitorId(visitorRequestMstDTO.getVisitorId());
-	        visitorRequestMst.setVehicleNo(visitorRequestMstDTO.getVehicleNo());
-	        visitorRequestMst.setDriverName(visitorRequestMstDTO.getDriverName());
-	        visitorRequestMst.setVehicleType(visitorRequestMstDTO.getVehicleType());
-	        visitorRequestMst.setDriverDlNo(visitorRequestMstDTO.getDriverDlNo());
-	        visitorRequestMst.setDriverDlUpto(visitorRequestMstDTO.getDriverDlUpto());
-	        visitorRequestMst.setEmpEmail(visitorRequestMstDTO.getEmpEmail());
-	        
-	        // Save VisitorRequestMst to get the generated ID
-	        visitorRequestMst = repo.save(visitorRequestMst);
+		    // Map DTO to Entity for VisitorRequestMst
+		    VisitorRequestMst visitorRequestMst = new VisitorRequestMst();
 
-//	         Map each VisitorDetailsDTO to VisitorRequestDtls and associate with the saved VisitorRequestMst
-	        List<VisitorRequestDtlsDTO> visitorDtlsList = visitorRequestMstDTO.getVisitorDtls();
-	        System.out.println("vis detials :"+visitorDtlsList);
-	        for (VisitorRequestDtlsDTO visitorRequestDtlsDTO : visitorDtlsList) {
-	            VisitorRequestDtls visitorRequestDtls = new VisitorRequestDtls();
-	            visitorRequestDtls.setName(visitorRequestDtlsDTO.getName());
-	            visitorRequestDtls.setIdProof(visitorRequestDtlsDTO.getIdProof());
-	            visitorRequestDtls.setIdProofNo(visitorRequestDtlsDTO.getIdproofNo());
-	            visitorRequestDtls.setContactNo(visitorRequestDtlsDTO.getContactNo());
-	            visitorRequestDtls.setAccessories(visitorRequestDtlsDTO.getAccessories());
-	            visitorRequestDtls.setDob(visitorRequestDtlsDTO.getDob());
-//	            Map<String,MultipartFile> files = new HashMap();
-//	            List<MultipartFile> idProofAndPhoto = new ArrayList();
-//	            idProofAndPhoto.add(visitorRequestDtlsDTO.getIdProofFile());
-//	            idProofAndPhoto.add(visitorRequestDtlsDTO.getPhoto());
-//	            files.put("idProod", visitorRequestDtlsDTO.getIdProofFile());
-//	            files.put("photo", visitorRequestDtlsDTO.getPhoto());
-//	            String fileStat = saveFile(visitorRequestDtlsDTO.getIdProofFile());0
-	           
-	            visitorRequestDtls.setPhoto(visitorRequestDtlsDTO.getPhoto());
-	            boolean FileUploadStatus = saveFile(visitorRequestDtlsDTO.getIdProofFile(),uploadDir); 
-	            System.out.println("fileStat :"+ FileUploadStatus);
+		    visitorRequestMst.setEmpId(visitorRequestMstDTO.getEmpId());
+		    visitorRequestMst.setEmpName(visitorRequestMstDTO.getEmpName());
+		    visitorRequestMst.setVisOrganization(visitorRequestMstDTO.getVisOrganization());
+		    visitorRequestMst.setPurpose(visitorRequestMstDTO.getPurpose());
+		    visitorRequestMst.setFromDate(visitorRequestMstDTO.getFromDate());
+		    visitorRequestMst.setToDate(visitorRequestMstDTO.getToDate());
+		    visitorRequestMst.setVisitorAddress(visitorRequestMstDTO.getVisitorAddress());
+		    visitorRequestMst.setHasVehicle(visitorRequestMstDTO.getHasVehicle());
+		    visitorRequestMst.setVisitorId(visitorRequestMstDTO.getVisitorId());
+		    visitorRequestMst.setVehicleNo(visitorRequestMstDTO.getVehicleNo());
+		    visitorRequestMst.setDriverName(visitorRequestMstDTO.getDriverName());
+		    visitorRequestMst.setVehicleType(visitorRequestMstDTO.getVehicleType());
+		    visitorRequestMst.setDriverDlNo(visitorRequestMstDTO.getDriverDlNo());
+		    visitorRequestMst.setDriverDlUpto(visitorRequestMstDTO.getDriverDlUpto());
+		    visitorRequestMst.setEmpEmail(visitorRequestMstDTO.getEmpEmail());
 
-	            // Set the foreign key relationship
-	            visitorRequestDtls.setVisitorRequestMst(visitorRequestMst); // Set the parent object
-	            
-	            // Save the VisitorRequestDtls entity
-	            VisitorRequestDtls savedData= dtlsRepo.save(visitorRequestDtls);
-	           
-	            BeanUtils.copyProperties(visitorRequestMst, visitorDtlsList);
-	            
-	        }
-	        return mstData;
-	    }
-	
+		    // Save VisitorRequestMst to get the generated ID
+		    visitorRequestMst = repo.save(visitorRequestMst);
+
+		    // Map and save VisitorRequestDtls
+		    List<VisitorRequestDtlsDTO> visitorDtlsList = visitorRequestMstDTO.getVisitorDtls();
+		    for (VisitorRequestDtlsDTO visitorRequestDtlsDTO : visitorDtlsList) {
+		        VisitorRequestDtls visitorRequestDtls = new VisitorRequestDtls();
+
+		        visitorRequestDtls.setName(visitorRequestDtlsDTO.getName());
+		        visitorRequestDtls.setIdProof(visitorRequestDtlsDTO.getIdProof());
+		        visitorRequestDtls.setIdProofNo(visitorRequestDtlsDTO.getIdproofNo());
+		        visitorRequestDtls.setContactNo(visitorRequestDtlsDTO.getContactNo());
+		        visitorRequestDtls.setAccessories(visitorRequestDtlsDTO.getAccessories());
+		        visitorRequestDtls.setDob(visitorRequestDtlsDTO.getDob());
+
+		        // Save ID proof file
+		        boolean fileUploadStatus = saveFile(visitorRequestDtlsDTO.getIdProofFile(), uploadDir);
+		        if (!fileUploadStatus) {
+		            throw new RuntimeException("File upload failed for: " + visitorRequestDtlsDTO.getName());
+		        }
+
+		        visitorRequestDtls.setPhoto(visitorRequestDtlsDTO.getPhoto());
+		        visitorRequestDtls.setVisitorRequestMst(visitorRequestMst); // Set the parent object
+
+		        // Save the VisitorRequestDtls entity
+		        dtlsRepo.save(visitorRequestDtls);
+		    }
+
+		    // Prepare the response DTO
+		    VisitorRequestMstDTO responseDTO = new VisitorRequestMstDTO();
+		    BeanUtils.copyProperties(visitorRequestMst, responseDTO);
+
+		    // Set Visitor Details in the response DTO
+		    List<VisitorRequestDtlsDTO> responseVisitorDtlsList = visitorDtlsList.stream()
+		        .map(dto -> {
+		            VisitorRequestDtlsDTO responseDtls = new VisitorRequestDtlsDTO();
+		            BeanUtils.copyProperties(dto, responseDtls);
+		            return responseDtls;
+		        }).collect(Collectors.toList());
+
+		    responseDTO.setVisitorDtls(responseVisitorDtlsList);
+
+		    return responseDTO;
+		}
+
+	 
+	 
+	 
+	 
 	 public VisitorRequestMstDTO updateVehicleDetails(VisitorRequestMstDTO updatedVisitorRequest) {
 	        // Retrieve the existing request by ID
 	        VisitorRequestMst existingRequest = repo.findById(updatedVisitorRequest.getId())
@@ -231,6 +305,15 @@ public class AppointmentService {
 	 public List<VisitorRequestMst> getAllVisitorRequest(String cmpCd){
 		 System.out.println("cmpCd: "+cmpCd);
 		 List<VisitorRequestMst> allRequests = repo.findByCmpCd(cmpCd);
+         System.out.println("output :"+allRequests);
+		 return allRequests;
+	 }
+	 
+	 
+	 // added on 17-01-25
+	 public List<VisitorRequestMst> getRequestsByStatus(String cmpCd,String status){
+		 System.out.println("cmpCd: "+cmpCd);
+		 List<VisitorRequestMst> allRequests = repo.getRequestsByStatus(cmpCd, status);
          System.out.println("output :"+allRequests);
 		 return allRequests;
 	 }
@@ -384,34 +467,70 @@ public class AppointmentService {
 		}
 
 
-	 
-	 
 	 public boolean saveFile(MultipartFile file, String uploadDir) {
-		    System.out.println("file: " + file);
-
 		    if (file == null || file.isEmpty()) {
-		        return false; 
+		        System.err.println("The file is null or empty.");
+		        return false;
 		    }
 
 		    try {
+		        // Ensure the upload directory exists
 		        File dir = new File(uploadDir);
 		        if (!dir.exists() && !dir.mkdirs()) {
-		            return false; 
-		        }
-                String originalFilename = "CO001_" + file.getOriginalFilename();
-		        if (originalFilename == null || originalFilename.trim().isEmpty()) {
-		            return false; 
+		            System.err.println("Failed to create the upload directory: " + uploadDir);
+		            return false;
 		        }
 
-		        Path filePath = Paths.get(uploadDir, originalFilename);
-		        Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
+		        // Prepare the file name
+		        String originalFilename = file.getOriginalFilename();
+		        if (originalFilename == null || originalFilename.trim().isEmpty()) {
+		            System.err.println("The file name is null or empty.");
+		            return false;
+		        }
+
+		        String prefixedFilename = "CO001_" + originalFilename;
+		        Path filePath = Paths.get(uploadDir, prefixedFilename);
+
+		        // Save the file
+		        Files.write(filePath, file.getBytes());
+		        System.out.println("File saved successfully at: " + filePath);
+		        return true;
 		    } catch (IOException e) {
-		        e.printStackTrace(); 
+		        System.err.println("An error occurred while saving the file: " + e.getMessage());
+		        e.printStackTrace();
 		        return false;
 		    }
-                return true; 
-		}
+	 
+	 
+//	 public boolean saveFile(MultipartFile file, String uploadDir) {
+//		    System.out.println("file: " + file);
+//
+//		    if (file == null || file.isEmpty()) {
+//		        return false; 
+//		    }
+//
+//		    try {
+//		        File dir = new File(uploadDir);
+//		        if (!dir.exists() && !dir.mkdirs()) {
+//		            return false; 
+//		        }
+//                String originalFilename = "CO001_" + file.getOriginalFilename();
+//		        if (originalFilename == null || originalFilename.trim().isEmpty()) {
+//		            return false; 
+//		        }
+//
+//		        Path filePath = Paths.get(uploadDir, originalFilename);
+//		        Files.write(filePath, file.getBytes(), StandardOpenOption.CREATE);
+//		    } catch (IOException e) {
+//		        e.printStackTrace(); 
+//		        return false;
+//		    }
+//                return true; 
+//		}
+	 
+	 
+	 
 
 
-	
+	 }
 }
