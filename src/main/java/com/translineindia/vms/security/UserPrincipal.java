@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.translineindia.vms.entity.Employee;
 import com.translineindia.vms.entity.Login;
 
 import lombok.Data;
@@ -16,6 +17,7 @@ import lombok.Data;
 public class UserPrincipal implements UserDetails{	
 	private String cmpCd;
 	private Login login;
+	private Employee emp;
 	
 	public UserPrincipal(Login login) {
 		this.login=login;
@@ -35,7 +37,10 @@ public class UserPrincipal implements UserDetails{
 		}else if(login.getRole().equalsIgnoreCase("VISITOR")) {
 			roles.add(new SimpleGrantedAuthority("ROLE_VISITOR"));
 			roles.add(new SimpleGrantedAuthority("ROLE_USER"));
-		}else {
+		}else if(login.getRole().equalsIgnoreCase("EMPLOYEE")) {
+			roles.add(new SimpleGrantedAuthority("ROLE_EMPLOYEE"));
+		}
+		else {
 			roles.add(new SimpleGrantedAuthority("ROLE_"+login.getRole().toUpperCase()));
 		}
 		return roles;

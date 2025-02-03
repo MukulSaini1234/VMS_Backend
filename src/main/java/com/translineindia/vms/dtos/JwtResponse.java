@@ -15,5 +15,7 @@ public class JwtResponse {
 	private String token;
 	private String timestamp;
 	private Login Login;
+//	private Employee employee;
+	
 	
 }

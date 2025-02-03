@@ -50,4 +50,17 @@ public class VisitorRequestMstDTO {
     private String cmpCd;
     private String reqStatus; // added on 15-01-25
     private String statusRemarks;// added on 15-01-25
+    private boolean isExtension; // added on 23-01-25
+    private LocalDate exFromDate; // added on 23-01-25
+    
+    private LocalDate exToDate; // added on 23-01-25
+    
+    private String rec_req_status; // added on 30-01-25
+    
+    private String rec_req_remarks; // added on 20-01-25
+    
+    private String face_registeration;// added on 30-01-25
+    private String off_cd; // added on 03-02-25
+    private String admin_req_status; // added on 03-02-25
+    private String admin_req_remarks; // added on 03-02-25
 }

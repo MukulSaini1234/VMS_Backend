@@ -1,81 +1,80 @@
 package com.translineindia.vms.service;
 
-import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.translineindia.vms.dtos.EmployeeDTO;
+import com.translineindia.vms.entity.Employee;
 import com.translineindia.vms.entity.Login;
+import com.translineindia.vms.entity.employeeTest;
+import com.translineindia.vms.repository.EmployeeRepository;
 import com.translineindia.vms.security.UserPrincipal;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-		
-		@Autowired
-		private UserService userService;
-	
-	   @Override
-	    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		   //username= VS$cmpCd$visitorId   || VS$cmpCd$emailId		  
-		   System.out.println(username);		   			   
-		   String cmpCd="";
-		   String idOrEmail="";			   
-//		   if(username.contains("::") && !username.contains("VS")) {
-		   
-		   if(username.contains("::")) {
-			   System.out.println("username1: "+username);
-			   cmpCd=username.split("::")[0];
-			   idOrEmail=username.split("::")[1];
-		   }
-//		   if(username.contains("VS")) {
-//			   System.out.println("username2:"+username);
-//			   cmpCd = username.split("::")[1];
-//			   idOrEmail = username.split("::")[2];
-//		   }
-		   System.out.println("cmpCd :"+cmpCd);
-		   System.out.println("id :"+idOrEmail);
-		   
-		   
-		   Login login=userService.getUserByIdOrEmail(cmpCd, idOrEmail);
-		   if(login!=null) {
-			   return new UserPrincipal(login);
-		   }else {
-			   throw new UsernameNotFoundException("User Not Found");
-		   }		   
-//		   else if (username.startsWith("AD::")) { // Handle Admin user // or else condition other than visitor
-//			   // tables are different but this class is same so need to check for different user type....
-//	            username = username.substring(4);
-//	            String cmpCd = "";
-//	            String idOrEmail = "";
-//	            
-//	            if (username.contains("::")) {
-//	                cmpCd = username.split("::")[0];
-//	                idOrEmail = username.split("::")[1];
-//	            }
-//	            System.out.println("username :"+username);
-//	            Login visitor=userService.getVisitorByIdOrEmail(cmpCd, idOrEmail); //make different table , dofferent entity and therefore service
-//	            if (visitor != null) {
-//	            	return new UserPrincipal(visitor); // Custom UserDetails for Admin
-//	            } else {
-//	                throw new UsernameNotFoundException("Admin Not Found");
-//	            }
-//	        }
-//		   throw new UsernameNotFoundException("User not found");
-		   
-//	        // Replace this with a database lookup for Visitor
-//	        if (!username.equals("test@visitor.com")) {
-//	            throw new UsernameNotFoundException("User not found");
-//	        }
-//
-//	        return new User("test@visitor.com", "$2a$10$7oE5COVBxVZoMciKQHo5mevFGIv8X3Qe1Zb.Ga/dCSTBV24w8F5AC", Collections.emptyList());
-//	        // Password above is "password" hashed using BCrypt
-//	        
-//	        
-	    }
-	
-	
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private EmployeeRepository empRep;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    	System.out.println("username :"+username);
+        if (username == null || username.isEmpty()) {
+            throw new UsernameNotFoundException("Username cannot be null or empty");
+        }
+
+        String cmpCd = "";
+        String idOrEmail = "";
+
+        if (username.contains("::")) {
+            String[] parts = username.split("::");
+            if (parts.length == 2) {
+                cmpCd = parts[0];
+                idOrEmail = parts[1];
+            } else {
+                throw new UsernameNotFoundException("Invalid username format. Expected format: cmpCd::idOrEmail");
+            }
+        } else {
+            throw new UsernameNotFoundException("Invalid username format. Expected '::' delimiter");
+        }
+
+        // Attempt to find the user by ID or Email
+        Login login = userService.getUserByIdOrEmail(cmpCd, idOrEmail);
+        if (login != null) {
+            return new UserPrincipal(login);
+        }
+//        else if(login == null && username)
+
+        // If login is not found and the username starts with "75", check for employee details
+        else if (login == null && username.startsWith("EMP")) {
+//            Optional<Employee> employeeOptional = empRep.findByCmpCdAndEmpId(cmpCd, idOrEmail);
+        	  Optional<employeeTest> employeeOptional = empRep.findByEmpId(idOrEmail);
+            
+            System.out.println("employee optional :"+employeeOptional);
+            if (employeeOptional.isPresent()) {
+//                Employee employee = employeeOptional.get();
+            	employeeTest  empTest = employeeOptional.get();
+            	
+                // Create a new Login object to wrap the employee's details
+                Login employeeLogin = new Login();
+                employeeLogin.setCmpCd(empTest.getCmpCd());
+                employeeLogin.setEmail(empTest.getEmail());
+                employeeLogin.setUserId(empTest.getEmpId());
+                employeeLogin.setRole("ROLE_EMPLOYEE"); // Assuming employee role is predefined
+
+                return new UserPrincipal(employeeLogin);
+            }
+        }
+        
+       
+        throw new UsernameNotFoundException("User not found with username: " + username);
+    }
 }

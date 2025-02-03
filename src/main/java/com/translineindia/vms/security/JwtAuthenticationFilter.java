@@ -66,20 +66,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			logger.info("Invalid Header Value !! ");
 		}
 		
+		logger.info("after conditon");
+		logger.info("username :"+username);
+		logger.info("info  "+SecurityContextHolder.getContext());
+		
+		
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			logger.info("test A");
 			Boolean validateToken = this.jwtHelper.validateToken(token, username);
-			if (validateToken) {	
+			logger.info("token: "+token);
+			if (validateToken) {
+				logger.info("test B");
 				UserDetailsService userDetailsService=applicationContext.getBean(UserDetailsService.class);
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);				
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
+				System.out.println("auth :"+authentication);
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 
 			} else {
 				logger.info("Validation fails !!");
 			}
-		}		
+		}	
+		
+
+	
 		filterChain.doFilter(request, response);
 	}
 	

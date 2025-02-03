@@ -73,4 +73,15 @@ public class VisitorRequestMst {
 	    return null;
 	}
 
+	public String isExtension;
+	
+	public String rec_req_status; // added on 30-01-25
+	
+	public String rec_req_remarks; // added on 30-01-25
+	
+	public String face_registeration; // added on 30-01-25
+	
+	public String offCd; // added on 03-02-25
+	public String admin_req_status;  // added on 03-02-25
+	public String admin_req_remarks; // added on 03-02-25
 }

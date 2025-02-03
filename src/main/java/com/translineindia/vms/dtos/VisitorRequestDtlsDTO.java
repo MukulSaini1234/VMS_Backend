@@ -2,6 +2,8 @@ package com.translineindia.vms.dtos;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -32,8 +34,9 @@ public class VisitorRequestDtlsDTO {
     @NotBlank
     @Pattern(regexp = "^[0-9]{10}$", message = "Contact number must be a valid 10-digit number")
     private String contactNo; // Encrypted format 
+    
     private String accessories;
-    @NotEmpty 
+//    @NotEmpty 
     private String photo;   // changed from multipart on 11-01-25
    // private String photo;
     
@@ -41,4 +44,5 @@ public class VisitorRequestDtlsDTO {
     
     private MultipartFile idProofFile;
     private Long visitorMstId; // Reference to `VisitorRequestMst` 
+    private String accessory;
 }

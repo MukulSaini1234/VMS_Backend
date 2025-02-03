@@ -227,6 +227,7 @@
 package com.translineindia.vms.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.translineindia.vms.config.EncryptionUtil;
 
 import jakarta.persistence.*;
@@ -263,7 +264,7 @@ public class VisitorRequestDtls {
     @JsonBackReference
     private VisitorRequestMst visitorRequestMst;
 
-
+    private String accessory;
   
     @PreUpdate
 	@PrePersist
@@ -271,32 +272,32 @@ public class VisitorRequestDtls {
 		try {
 			this.idProofNo = EncryptionUtil.encrypt2(this.idProofNo);
 			this.dob = EncryptionUtil.encrypt2(this.dob);
-			this.contactNo = EncryptionUtil.encrypt2(this.contactNo);
+//			this.contactNo = EncryptionUtil.encrypt2(this.contactNo);
 	    } catch (Exception e) {
 			System.out.println("Error encrypting sensitive data");
 			throw new RuntimeException("Failed to encrypt sensitive data", e);
 		}
 	}
 	
-//	@PostLoad
-//	public void decryptSensitiveData() {
-//		try {
-//			if (this.dob != null && !this.dob.isEmpty()) {
-//				this.dob = EncryptionUtil.decrypt2(this.dob);
-//				System.out.println("Decrypted DOB: " + this.dob); 
-//			}
-//			if (this.idProofNo != null && !this.idProofNo.isEmpty()) {
-//				this.idProofNo = EncryptionUtil.decrypt2(this.idProofNo);
-//			}
+	@PostLoad
+	public void decryptSensitiveData() {
+		try {
+			if (this.dob != null && !this.dob.isEmpty()) {
+				this.dob = EncryptionUtil.decrypt2(this.dob);
+				System.out.println("Decrypted DOB: " + this.dob); 
+			}
+			if (this.idProofNo != null && !this.idProofNo.isEmpty()) {
+				this.idProofNo = EncryptionUtil.decrypt2(this.idProofNo);
+			}
 //			if (this.contactNo != null && !this.contactNo.isEmpty()) {
 //				this.contactNo = EncryptionUtil.decrypt2(this.contactNo);
 //			}
-//			
-//		} catch (Exception e) {
-//			System.out.println("Error decrypting sensitive data");
-//			throw new RuntimeException("Failed to decrypt sensitive data", e);
-//		}
-//	}
+			
+		} catch (Exception e) {
+			System.out.println("Error decrypting sensitive data");
+			throw new RuntimeException("Failed to decrypt sensitive data", e);
+		}
+	}
    
     @Override
     public String toString() {

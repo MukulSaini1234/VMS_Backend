@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,6 +35,7 @@ import com.translineindia.vms.entity.VisitorRequestMst;
 import com.translineindia.vms.exception.ConflictException;
 import com.translineindia.vms.repository.AppointmentRepo;
 import com.translineindia.vms.repository.VisitorRequestDetailsRepo;
+import com.translineindia.vms.security.UserPrincipal;
 
 import jakarta.transaction.Transactional;
 import lombok.Data;
@@ -214,9 +219,11 @@ public class AppointmentService {
 	 
 	 
 	 public VisitorRequestMstDTO createVisitorRequest(VisitorRequestMstDTO visitorRequestMstDTO) {
+		    System.out.println("visitorRequest Mst dTo:"+visitorRequestMstDTO);
 		    // Map DTO to Entity for VisitorRequestMst
 		    VisitorRequestMst visitorRequestMst = new VisitorRequestMst();
 
+		    visitorRequestMst.setCmpCd(visitorRequestMstDTO.getCmpCd());
 		    visitorRequestMst.setEmpId(visitorRequestMstDTO.getEmpId());
 		    visitorRequestMst.setEmpName(visitorRequestMstDTO.getEmpName());
 		    visitorRequestMst.setVisOrganization(visitorRequestMstDTO.getVisOrganization());
@@ -246,6 +253,7 @@ public class AppointmentService {
 		        visitorRequestDtls.setIdProofNo(visitorRequestDtlsDTO.getIdproofNo());
 		        visitorRequestDtls.setContactNo(visitorRequestDtlsDTO.getContactNo());
 		        visitorRequestDtls.setAccessories(visitorRequestDtlsDTO.getAccessories());
+		        
 		        visitorRequestDtls.setDob(visitorRequestDtlsDTO.getDob());
 
 		        // Save ID proof file
@@ -302,9 +310,18 @@ public class AppointmentService {
 	    }
 	
 	 // added on 14-01-25
-	 public List<VisitorRequestMst> getAllVisitorRequest(String cmpCd){
+	 public List<VisitorRequestMst> getAllVisitorRequest(String cmpCd){    // off_cd needd to be added in this 
 		 System.out.println("cmpCd: "+cmpCd);
 		 List<VisitorRequestMst> allRequests = repo.findByCmpCd(cmpCd);
+         System.out.println("output :"+allRequests);
+		 return allRequests;
+	 }
+	 
+	 // added on 14-01-25
+	 
+	 public List<VisitorRequestMst> getAllRequestsForReception(String cmpCd){
+		 System.out.println("cmpCd: "+cmpCd);
+		 List<VisitorRequestMst> allRequests = repo.requestsForReception(cmpCd);
          System.out.println("output :"+allRequests);
 		 return allRequests;
 	 }
@@ -442,18 +459,19 @@ public class AppointmentService {
 //	        return masterDTO;
 	    }
 	 
-	 
-	// Following code added on 15-01-25
-	 public String updateReqStatus(VisitorRequestMstDTO updatedVisitorRequest) {
+	 // Added on 30-01-25
+	 public String updateReqStatusReception(VisitorRequestMstDTO updatedVisitorRequest) {
+		 System.out.println("updated "+updatedVisitorRequest);
 		    try {
 		        // Retrieve the existing request by ID
 		        VisitorRequestMst existingRequest = repo.findById(updatedVisitorRequest.getId())
 		                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + updatedVisitorRequest.getId()));
 
 		        // Update the necessary fields
-		        existingRequest.setReqStatus(updatedVisitorRequest.getReqStatus());
-		        existingRequest.setStatusRemarks(updatedVisitorRequest.getStatusRemarks());
-
+		        existingRequest.setRec_req_status(updatedVisitorRequest.getReqStatus());
+		        existingRequest.setRec_req_remarks(updatedVisitorRequest.getStatusRemarks());
+		        existingRequest.setFace_registeration(updatedVisitorRequest.getFace_registeration());
+              
 		        // Save the updated entity
 		        repo.save(existingRequest);
 
@@ -465,6 +483,81 @@ public class AppointmentService {
 		        throw new RuntimeException("Failed to update request status: " + ex.getMessage());
 		    }
 		}
+
+	 
+	 
+	 
+	 
+	// Following code added on 15-01-25
+	 public String updateReqStatus(VisitorRequestMstDTO updatedVisitorRequest) {
+		 System.out.println("updated "+updatedVisitorRequest);
+	        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+	        
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            
+            // Get the authorities (roles) associated with the user
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+            
+            // Check if the user has a specific role (e.g., "ROLE_ADMIN")
+            boolean hasAdminRole = authorities.stream()
+                                              .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+            boolean hasEmpRole = authorities.stream().anyMatch(authority -> authority.getAuthority().equals("ROLE_EMP"));
+	       
+            System.out.println("hasAdminRole :"+hasAdminRole);
+            System.out.println("hasEmpRole :"+hasEmpRole);
+	        if(hasAdminRole) {
+	        
+		    try {
+		        // Retrieve the existing request by ID
+		        VisitorRequestMst existingRequest = repo.findById(updatedVisitorRequest.getId())
+		                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + updatedVisitorRequest.getId()));
+
+		        // Update the necessary fields
+		        existingRequest.setReqStatus(updatedVisitorRequest.getReqStatus());
+		       
+               
+                	existingRequest.setAdmin_req_status(updatedVisitorRequest.getAdmin_req_status());
+                	existingRequest.setAdmin_req_remarks(updatedVisitorRequest.getAdmin_req_remarks());
+                	existingRequest.setOffCd(updatedVisitorRequest.getOff_cd());
+                
+		        // Save the updated entity
+		        repo.save(existingRequest);
+                return updatedVisitorRequest.getReqStatus();
+		    } catch (RuntimeException ex) {
+		        throw ex; // Let the controller handle runtime exceptions
+		    } catch (Exception ex) {
+		        throw new RuntimeException("Failed to update request status: " + ex.getMessage());
+		    }
+		    
+	        }
+//	        else if(hasEmpRole) {
+	        	
+	        	 VisitorRequestMst existingRequest = repo.findById(updatedVisitorRequest.getId())
+			                .orElseThrow(() -> new RuntimeException("Visitor request not found with ID " + updatedVisitorRequest.getId()));
+
+			        // Update the necessary fields
+			        existingRequest.setReqStatus(updatedVisitorRequest.getReqStatus());
+			       
+	                if(updatedVisitorRequest.isExtension()) {
+	                	System.out.println("test 1");
+	                	existingRequest.setFromDate(updatedVisitorRequest.getExFromDate());
+	                	existingRequest.setToDate(updatedVisitorRequest.getExToDate());
+	                	existingRequest.setIsExtension("Y");
+	                	existingRequest.setStatusRemarks(updatedVisitorRequest.getStatusRemarks()+"changed date from "+updatedVisitorRequest.getFromDate()+"to "+updatedVisitorRequest.getToDate());
+	                }
+	                else {
+	                	System.out.println("test 2");
+	                	 existingRequest.setStatusRemarks(updatedVisitorRequest.getStatusRemarks());
+	                }
+			        // Save the updated entity
+			        repo.save(existingRequest);
+	                return updatedVisitorRequest.getReqStatus();
+//			    }
+	        	
+	        }
+	        
+		
 
 
 	 public boolean saveFile(MultipartFile file, String uploadDir) {

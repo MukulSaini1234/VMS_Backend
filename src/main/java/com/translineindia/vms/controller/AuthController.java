@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,10 @@ import com.translineindia.vms.dtos.LoginDTO;
 import com.translineindia.vms.dtos.NewLoginDTO;
 import com.translineindia.vms.dtos.PasswordChangeReqDTO;
 import com.translineindia.vms.dtos.VisitorLoginDTO;
+import com.translineindia.vms.entity.Employee;
 import com.translineindia.vms.entity.Login;
+import com.translineindia.vms.entity.employeeTest;
+import com.translineindia.vms.repository.EmployeeRepository;
 import com.translineindia.vms.repository.LoginRepository;
 import com.translineindia.vms.security.JwtHelper;
 import com.translineindia.vms.security.UserPrincipal;
@@ -66,10 +70,20 @@ public class AuthController {
 	@Autowired
 	private UserService userService;
 	
+	
+	@Autowired
+	private EmployeeRepository empRepo;
+	
 	@PostMapping("/login")
 	public ResponseEntity<JwtResponse> loginVisitor(@Valid @RequestBody JwtRequest jwtRequest) {		 	
 		//validate if user exists or not		
-		Login visitor = userService.getUserByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());		
+		Login visitor = userService.getUserByIdOrEmail(jwtRequest.getCmpCd(),jwtRequest.getUserId());	
+		
+		
+			
+			Optional<Employee> emp = empRepo.findByCmpCdAndEmpId(jwtRequest.getCmpCd(),jwtRequest.getUserId());
+		    System.out.println("emp :"+emp);
+		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		 if(visitor!=null && passwordEncoder.matches(jwtRequest.getUserPw(), visitor.getPassword())) {
 			 	String userNameToken = jwtRequest.getCmpCd()+ "::" +jwtRequest.getUserId();
@@ -89,7 +103,38 @@ public class AuthController {
 						.build();
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			 
-		 }else {	
+		 }
+		 else if(emp.isPresent()) {
+			    System.out.println("emp :"+emp);
+			 	String userNameToken = jwtRequest.getCmpCd()+ "::" +jwtRequest.getUserId();
+			    String token = this.jwtHelper.generateToken(userNameToken);
+			    System.out.println("userNameToken :"+userNameToken);
+				long expirationTime = System.currentTimeMillis() + this.jwtHelper.getTokenValidity() * 1000;
+				
+				String time = sdf.format(new Date(expirationTime));
+				Employee employee = new Employee();
+//				employee.setEmail(emp.get())
+//				employee.setCmpCd(emp.get().getCmpCd());
+//				employee.setEmail(emp.get().getEmail());
+//				employee.setEmpId(emp.get().getEmpId());
+//				employee.setRole("EMP");
+				Login login = new Login();
+				login.setEmail(emp.get().getEmail());
+				login.setUserId(emp.get().getEmpId());
+				login.setCmpCd(emp.get().getCmpCd());
+				login.setRole("EMP");
+				 
+				JwtResponse response = JwtResponse.builder()
+						.status("success")
+						.message("Login Successfull")
+						.token(token)
+						.timestamp(time)
+						.Login(login)
+						.build();
+				return new ResponseEntity<>(response, HttpStatus.OK);
+			 
+		 }
+		 else {	
 			 JwtResponse response= JwtResponse.builder().status("failed")
 			 .message("Bad Credentials")
 			 .timestamp(sdf.format(new Date()))
