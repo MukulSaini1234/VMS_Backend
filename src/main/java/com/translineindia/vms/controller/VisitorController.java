@@ -231,6 +231,21 @@ public class VisitorController {
   	
   }
   
+  
+//Added on 04-02-24
+   @GetMapping("getVisitDtlsById")
+   public ResponseEntity<Optional<VisitorRequestMst>> getRequestById(@RequestParam String cmpCd, @RequestParam String visitId) {
+
+     Optional<VisitorRequestMst> res = Optional.ofNullable(appointmentService.getVisitDetails(cmpCd, visitId));
+     if(res.isPresent() && !res.isEmpty()) {
+    	 return ResponseEntity.status(HttpStatus.OK).body(res);
+     }
+     else {
+    	 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+     }
+
+}
+  
   // Added on 17-01-25
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("getAcceptedRequests")

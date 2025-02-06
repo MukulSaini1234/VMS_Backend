@@ -317,6 +317,17 @@ public class AppointmentService {
 		 return allRequests;
 	 }
 	 
+	 
+	 // Added on 04-02-25
+	 public VisitorRequestMst getVisitDetails(String cmpCd,String visitId) {
+		 System.out.println("cmpcd: "+cmpCd);
+		 System.out.println("visitId:"+visitId);
+		 VisitorRequestMst req = repo.findByCmdAndId(cmpCd, visitId);
+		 System.out.println("visit req: "+req);
+		 return req;
+	 }
+	 
+	 
 	 // added on 14-01-25
 	 
 	 public List<VisitorRequestMst> getAllRequestsForReception(String cmpCd){
