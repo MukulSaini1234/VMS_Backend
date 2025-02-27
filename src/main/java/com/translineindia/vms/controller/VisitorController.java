@@ -55,16 +55,20 @@ import com.translineindia.vms.dtos.VisitorLoginDTO;
 import com.translineindia.vms.dtos.VisitorRequestDtlsDTO;
 import com.translineindia.vms.dtos.VisitorRequestMstDTO;
 import com.translineindia.vms.entity.AppointmentEntity;
+import com.translineindia.vms.entity.User;
 import com.translineindia.vms.entity.VisitorRequestMst;
 import com.translineindia.vms.security.JwtHelper;
 import com.translineindia.vms.security.UserPrincipal;
 import com.translineindia.vms.service.AppointmentService;
+import com.translineindia.vms.service.EmailService;
 import com.translineindia.vms.service.UserService;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.persistence.criteria.Path;
 import jakarta.validation.Valid;
 import jakarta.servlet.ServletContext;
+import jakarta.transaction.Transactional;
+
 import com.transline.vms.utils.ApiResponse;
 @RestController
 @RequestMapping("/api/visitors")
@@ -83,6 +87,9 @@ public class VisitorController {
 	 
     @Autowired
 	private AppointmentService appointmentService;
+    
+    @Autowired
+    private EmailService emailService;
    
    
 //	@PostMapping(path="/appointment",consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -145,6 +152,7 @@ public class VisitorController {
     
     // new created on 27-01-25
     @PostMapping(value ="/request" , consumes = "multipart/form-data") // working now on 8Th 
+    @Transactional
     public VisitorRequestMstDTO createVisitorRequest(
 			@RequestParam Map<String,String> params,
 			@RequestParam Map<String,MultipartFile> files
@@ -153,7 +161,7 @@ public class VisitorController {
     {
      	System.out.println("request :"+params);
      	System.out.println("files :"+files);
-     // Initialize the master DTO
+   
         VisitorRequestMstDTO visitorMstDTO = new VisitorRequestMstDTO();
         visitorMstDTO.setEmpId(params.get("empId"));
         visitorMstDTO.setEmpName(params.get("empName"));
@@ -172,12 +180,7 @@ public class VisitorController {
         visitorMstDTO.setVisitorId(params.get("visitorId"));
         visitorMstDTO.setCmpCd(params.get("cmpCd"));
         visitorMstDTO.setReqStatus(params.get("reqStatus"));
-//        visitorMstDTO.setStatusRemarks(params.get("statusRemarks"));
-//        visitorMstDTO.setExtension(Boolean.parseBoolean(params.get("isExtension")));
-//        visitorMstDTO.setExFromDate(LocalDate.parse(params.get("exFromDate")));
-//        visitorMstDTO.setExToDate(LocalDate.parse(params.get("exToDate")));
 
-        // Map the nested DTOs
         List<VisitorRequestDtlsDTO> visitorDetailsList = new ArrayList<>();
         int i = 0;
         while (params.containsKey("visitorDtls[" + i + "].name")) {
@@ -188,7 +191,6 @@ public class VisitorController {
             visitorDtlsDTO.setDob(params.get("visitorDtls[" + i + "].dob"));
             visitorDtlsDTO.setContactNo(params.get("visitorDtls[" + i + "].contactNo"));
 
-            // Handle file mapping for photo or ID proof files
             MultipartFile photoFile = files.get("visitorDtls[" + i + "].photo");
             if (photoFile != null && !photoFile.isEmpty()) {
                 visitorDtlsDTO.setPhoto(photoFile.getOriginalFilename());
@@ -203,6 +205,7 @@ public class VisitorController {
             i++;
         }
 
+        System.out.println("visitor Details :"+visitorDetailsList);
         visitorMstDTO.setVisitorDtls(visitorDetailsList);
         System.out.println("visitor Mst DTO "+visitorMstDTO);
         // Process the visitorMstDTO (e.g., save to database)
@@ -210,7 +213,7 @@ public class VisitorController {
 
 //        return "Visitor request created successfully!";
         
-      
+      System.out.println("visitor req; "+visitorMstDTO);
       VisitorRequestMstDTO res = appointmentService.createVisitorRequest(visitorMstDTO);
 //      return ResponseEntity.ok("Appointment request saved successfully.");
   
@@ -226,7 +229,7 @@ public class VisitorController {
   		return  ResponseEntity.status(HttpStatus.OK).body(vsm);
   	}
   	else {
-  		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  		return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); 
   	}
   	
   }
@@ -236,6 +239,8 @@ public class VisitorController {
    @GetMapping("getVisitDtlsById")
    public ResponseEntity<Optional<VisitorRequestMst>> getRequestById(@RequestParam String cmpCd, @RequestParam String visitId) {
 
+	 System.out.println("cmpCd"+cmpCd);
+	 System.out.println("visitId: "+visitId);  
      Optional<VisitorRequestMst> res = Optional.ofNullable(appointmentService.getVisitDetails(cmpCd, visitId));
      if(res.isPresent() && !res.isEmpty()) {
     	 return ResponseEntity.status(HttpStatus.OK).body(res);
@@ -287,7 +292,17 @@ public class VisitorController {
   	
   }
   
-  
+  // Added on 11-02-25
+  @PreAuthorize("hasRole('EMP')")
+  @GetMapping("getAllReqForEmp")
+  public ResponseEntity<Optional<List<VisitorRequestMst>>> getRequestsForEmp(@RequestParam String cmpCd,@RequestParam String empId){
+	  Optional<List<VisitorRequestMst>> vsm = Optional.ofNullable(appointmentService.getAllVisitsForEmp(cmpCd, empId));
+	  if(vsm.isPresent() && !vsm.isEmpty()) {
+		  return ResponseEntity.status(HttpStatus.OK).body(vsm);
+	  }else {
+		  return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	  }
+  }
   
     
     // Get API ADDED on 08-01-25
@@ -359,6 +374,9 @@ public class VisitorController {
             	status = "Denied"; 
             } 
 //            return ResponseEntity.ok("Request " + status);
+            
+          
+            
             return new ResponseEntity<ApiResponse>(new ApiResponse("Request "+status,true), HttpStatus.OK);
 //            return new ResponseEntity<ApiResponse>(new ApiResponse("Request :"+status, true), HttpStatus.OK);
         } catch (RuntimeException ex) {

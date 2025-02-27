@@ -48,6 +48,9 @@ public class AppointmentService {
 	private AppointmentRepo repo;
 	
 	@Autowired
+    private EmailService emailService;
+	
+	@Autowired
 	private VisitorRequestDetailsRepo dtlsRepo;
 	 private static final String uploadDir = "uploads/";
 	
@@ -317,6 +320,14 @@ public class AppointmentService {
 		 return allRequests;
 	 }
 	 
+	 // Added on 11-02-25
+	 public List<VisitorRequestMst> getAllVisitsForEmp(String cmpCd,String empId){
+		 System.out.println("cmpCd: "+cmpCd);
+		 System.out.println("empId :"+empId);
+		 List<VisitorRequestMst> allRequests = repo.findByCmpAndEmpId(cmpCd,empId);
+		 System.out.println("allRequests :"+allRequests);
+		 return allRequests;
+	 }
 	 
 	 // Added on 04-02-25
 	 public VisitorRequestMst getVisitDetails(String cmpCd,String visitId) {
@@ -506,8 +517,13 @@ public class AppointmentService {
 
 	        
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            System.out.println("userPrincipal :"+userPrincipal);
+            String status = "";
+            String to = "";
+            String subject = "Visit Request Status";
             
             // Get the authorities (roles) associated with the user
+            
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             
             // Check if the user has a specific role (e.g., "ROLE_ADMIN")
@@ -534,6 +550,17 @@ public class AppointmentService {
                 
 		        // Save the updated entity
 		        repo.save(existingRequest);
+		       
+//	            to = existingRequest.getEmpEmail();
+		        to = "ayush9044182486@gmail.com";
+	            if(updatedVisitorRequest.getReqStatus().equalsIgnoreCase("A")) {
+	            	status = "Accepted";
+	            }
+	            else {
+	            	status = "Denied";
+	            }
+	            String body = "Your visit Request carrying visit Id "+existingRequest.getId()+ " to meet "+ existingRequest.getEmpName() + " has been "+status+" by the Admin";
+	            emailService.sendEmail(to, subject, body);
                 return updatedVisitorRequest.getReqStatus();
 		    } catch (RuntimeException ex) {
 		        throw ex; // Let the controller handle runtime exceptions
@@ -563,6 +590,15 @@ public class AppointmentService {
 	                }
 			        // Save the updated entity
 			        repo.save(existingRequest);
+			        to = "ayush9044182486@gmail.com";
+		            if(updatedVisitorRequest.getReqStatus().equalsIgnoreCase("A")) {
+		            	status = "Accepted"; 
+		            }
+		            else {
+		            	status = "Denied";
+		            }
+		            String body = "Your visit Request carrying visit Id "+existingRequest.getId()+ " to meet "+ existingRequest.getEmpName() + " has been "+status+" by the Employee";
+		            emailService.sendEmail(to, subject, body);
 	                return updatedVisitorRequest.getReqStatus();
 //			    }
 	        	

@@ -53,7 +53,7 @@ public class VisitorRequestMstDTO {
     private boolean isExtension; // added on 23-01-25
     private LocalDate exFromDate; // added on 23-01-25
     
-    private LocalDate exToDate; // added on 23-01-25
+    private LocalDate exToDate; // added on 23-01-25s
     
     private String rec_req_status; // added on 30-01-25
     
